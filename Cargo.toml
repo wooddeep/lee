@@ -1,0 +1,8 @@
+[package]
+name = "lee"
+version = "0.1.0"
+authors = ["lihan <lihan@migu.cn>"]
+edition = "2018"
+
+[dependencies]
+regex = "1.3.5"
