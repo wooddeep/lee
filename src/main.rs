@@ -36,7 +36,9 @@ fn main() {
     //eat_at_restaurant();
     //println!("Hello, world!");
 
-    let mut lexer = Lexer{curr_index: 0, token_list: Vec::new(), formula: String::from("/* coment */hello#abc def\nabc \"123\" \n -90.123f123,;:+-=*/abcd &&& ||")};
+    //let mut lexer = Lexer{curr_index: 0, token_list: Vec::new(), formula: String::from("/* coment */hello#abc def\nabc \"123\" \n -90.123f123,;:+-=*/abcd &&& ||")};
+
+    let mut lexer = Lexer{curr_index: 0, token_list: Vec::new(), formula: String::from("1 * 1;")};
 
     lexer.analyze();
 
@@ -44,6 +46,8 @@ fn main() {
         println!("{}", element.literal)
     }
 
+    let parse = Parser{lexer: &lexer};
+    parse.parse_factor();
     //tree_main();
 }
 
