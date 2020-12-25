@@ -1,9 +1,18 @@
 pub mod lexer;   // 文件夹名 作为模块名, 文件夹内模块文件的名称必须为mod.rs
+pub mod parser;
+
+pub mod tree;
+
+
 pub use crate::lexer::shell;
 
 //pub use crate::dir_as_mod_name::bare_func;
 
 pub use crate::lexer::*;
+
+pub use crate::parser::*;
+
+pub use crate::tree::*;
 
 pub fn eat_at_restaurant() {
     //hosting::add_to_waitlist();
@@ -34,5 +43,7 @@ fn main() {
     for element in &lexer.token_list {
         println!("{}", element.literal)
     }
+
+    tree_main();
 }
 

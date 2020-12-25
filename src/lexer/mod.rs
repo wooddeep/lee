@@ -66,7 +66,7 @@ impl Lexer {
         let regex_string = Regex::new(r#"".*""#).unwrap();
         let regex_number = Regex::new(r#"\-?[0-9]+\.?[0-9]*[lf]*"#).unwrap();
 
-        for (i, c) in r.captures_iter(&self.formula).enumerate() {
+        for (_i, c) in r.captures_iter(&self.formula).enumerate() {
             for j in 0..c.len() {
                 if regex_multi_comment.is_match(&c[j]) {
                     let token = Token{literal: String::from(&c[j]), token_type: TokenType::MultipleLineComment};
@@ -188,7 +188,7 @@ impl Lexer {
                         let token = Token{literal: String::from(&c[j]), token_type: TokenType::OR};
                         self.token_list.push(token);
                     },
-                    //_ => println!("group {},{} : {}", i, j, &c[j]),
+                    //_ => println!("group {},{} : {}", _i, j, &c[j]),
                     _ => {},
                 }
             }
