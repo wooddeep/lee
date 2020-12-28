@@ -1,3 +1,4 @@
+use std::cell::Cell;
 use regex::{Regex};
 
 pub mod shell {
@@ -12,7 +13,7 @@ pub fn bare_func() {
 
 #[allow(dead_code)]
 pub struct Lexer {
-    pub curr_index: usize,
+    pub curr_index: Cell<usize>,
     pub token_list: Vec<Token>,
     pub formula: String,
 }
@@ -207,15 +208,20 @@ impl Lexer {
     }
     */
 
-    pub fn pick(&mut self) -> Option<&Token> {
+    pub fn pick(&self) -> Option<&Token> {
         
-        if self.curr_index == self.token_list.len() - 1 {
+        if self.curr_index.get() == self.token_list.len() - 1 {
             return None
         }
 
-        self.curr_index = self.curr_index + 1;
+        //println!("##[a] curr_index: {}", self.curr_index.get());
+
+        let new_val = self.curr_index.get() + 1;
+
+        self.curr_index.set(new_val);
+
         
-        return Some(&self.token_list[self.curr_index]);
+        return Some(&self.token_list[self.curr_index.get() - 1]);
     }
 
     /*
@@ -231,10 +237,13 @@ impl Lexer {
     */
 
     pub fn lookup(&self, n: usize) -> Option<&Token> {
-        return Some(&self.token_list[self.curr_index + n]);
+        //println!("##shit!!!!");
+        //println!("##[b] curr_index: {}", self.curr_index.get() + n);
+
+        return Some(&self.token_list[self.curr_index.get() + n]);
     }
 
     pub fn lookups(&self, n: usize) -> Option<&Token> {
-        return Some(&self.token_list[self.curr_index + n - 1]);
+        return Some(&self.token_list[self.curr_index.get() + n - 1]);
     }
 }

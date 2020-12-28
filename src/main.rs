@@ -1,3 +1,5 @@
+use std::cell::Cell;
+
 pub mod lexer;   // 文件夹名 作为模块名, 文件夹内模块文件的名称必须为mod.rs
 pub mod parser;
 
@@ -38,7 +40,7 @@ fn main() {
 
     //let mut lexer = Lexer{curr_index: 0, token_list: Vec::new(), formula: String::from("/* coment */hello#abc def\nabc \"123\" \n -90.123f123,;:+-=*/abcd &&& ||")};
 
-    let mut lexer = Lexer{curr_index: 0, token_list: Vec::new(), formula: String::from("1 * 1;")};
+    let mut lexer = Lexer{curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from("1 * 2 / 3 * 4 * 5 * 6")};
 
     lexer.analyze();
 
@@ -46,8 +48,8 @@ fn main() {
         println!("{}", element.literal)
     }
 
-    let parse = Parser{lexer: &lexer};
-    parse.parse_factor();
+    let mut parse = Parser{lexer: &mut lexer};
+    parse.parse_term();
     //tree_main();
 }
 
