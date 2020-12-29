@@ -1,20 +1,21 @@
 use crate::lexer::*;
 use crate::tree::*;
 use std::collections::HashMap;
-
+use std::cell::RefCell;
 
 #[allow(dead_code)]
 pub enum SemanticsType {
-    Direct,    // 立即数
-    Calculate, // 计算
+    Direct,
+    // 立即数
+    Calculate,
+    // 计算
     Assignment,
     Compare,
     MapSet,
 }
 
 #[allow(dead_code)]
-pub struct Parser <'a>  {
-    
+pub struct Parser<'a> {
     /*
     constructor(formula) {
         this.lexer = new Lexer(formula)
@@ -23,11 +24,10 @@ pub struct Parser <'a>  {
     }
     */
 
-    pub lexer:  &'a mut Lexer,
+    pub lexer: &'a mut Lexer,
 }
 
-impl <'a> Parser <'a> {
-    
+impl<'a> Parser<'a> {
     /*
      * term: factor { ("*" | "/") factor }
      */
@@ -77,10 +77,40 @@ impl <'a> Parser <'a> {
         match token_type {
             TokenType::MULTIP | TokenType::DIVIDER => {
                 return true;
-            },
-            _ => {return false;},
+            }
+            _ => { return false; }
         }
     }
+
+
+    fn parse_mul_div(&self, left: Option<Tree>, token_type: &TokenType) -> Option<Tree> {
+        let token = self.lexer.pick();
+
+        match token {
+            None => { return left; } // 返回 乘除法的逻辑
+            _ => { println!("##: {}", token.unwrap().literal) }
+        }
+
+        let right = self.parse_factor();
+
+        let left_node = Some(Box::new(left.unwrap()));
+        let right_node = Some(Box::new(right.unwrap()));
+
+        let left = Tree {
+            value: 0,
+            token_type: TokenType::Number,
+            semantics_type: SemanticsType::Calculate,
+            left: left_node,
+            right: right_node,
+        };
+
+        let next = self.lexer.lookup(0);
+        let token_type = &next.unwrap().token_type;
+        if !self.match_mul_div(token_type) { return Some(left); }
+
+        self.parse_mul_div(Some(left), token_type)
+    }
+
 
     #[allow(dead_code)]
     pub fn parse_term(&mut self) {
@@ -88,61 +118,34 @@ impl <'a> Parser <'a> {
         let next = self.lexer.lookup(0);
         let token_type = &next.unwrap().token_type;
 
-        let literal = &next.unwrap().literal;
-
-        while self.match_mul_div(token_type) {
-            let token = self.lexer.pick();
-
-            match token {
-                None => {break;},
-                _ => {println!("##: {}", token.unwrap().literal)},
-            }
-
-            let right = self.parse_factor();
-
-            //left: Option<Box<Tree>>
-            let left_node = Some(Box::new(left.unwrap()));
-            let right_node = Some(Box::new(right.unwrap()));
-            let left = Tree {value: 0, token_type: TokenType::Number, semantics_type: SemanticsType::Calculate, left:left_node , right: right_node};
-            
-            let next = self.lexer.lookup(0);
-            let token_type = &next.unwrap().token_type;
-            let literal = &next.unwrap().literal;
-
-        }
-
-
+        self.parse_mul_div(left, token_type);
     }
 
-    /*
-    value: i32,
-    token_type: TokenType,
-    semantics_type: SemanticsType,
-    left: Option<Box<Tree>>,
-    right: Option<Box<Tree>>
-    */
     #[allow(dead_code)]
     pub fn parse_factor(&self) -> Option<Tree> {
         let token = self.lexer.lookup(0);
 
         let token_type = &token.unwrap().token_type;
-        
+
         match token_type {
             TokenType::Number => {
                 let int = token.unwrap().literal.parse::<i32>().unwrap();
                 println!("value = {}", int);
                 self.lexer.pick(); // 取数
 
-                let tree = Tree { value: 0, token_type: TokenType::Number, semantics_type: SemanticsType::Direct, left: None, right: None};
+                let tree = Tree {
+                    value: 0,
+                    token_type: TokenType::Number,
+                    semantics_type: SemanticsType::Direct,
+                    left: None,
+                    right: None,
+                };
+
                 return Some(tree);
-            },
+            }
             _ => {
                 return None;
-            },
+            }
         }
-
-
-
     }
-
 }
