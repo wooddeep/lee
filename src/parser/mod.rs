@@ -98,7 +98,7 @@ impl<'a> Parser<'a> {
 
         let left = Tree {
             value: 0,
-            token_type: TokenType::Number,
+            token_type: *token_type,//TokenType::Number,
             semantics_type: SemanticsType::Calculate,
             left: left_node,
             right: right_node,

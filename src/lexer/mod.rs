@@ -19,6 +19,7 @@ pub struct Lexer {
 }
 
 #[allow(dead_code)]
+#[derive(Copy, Clone)]
 pub enum TokenType {
     MultipleLineComment,
     SingleLineComment,
