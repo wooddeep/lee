@@ -53,8 +53,6 @@ impl<'a> Executor<'a> {
             }
         }
 
-
-        0
     }
 
 
