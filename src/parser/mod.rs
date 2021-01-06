@@ -132,7 +132,7 @@ impl<'a> Parser<'a> {
                 self.lexer.pick(); // 取数
 
                 let tree = Tree {
-                    value: 0,
+                    value: int,
                     token_type: TokenType::Number,
                     semantics_type: SemanticsType::Direct,
                     left: None,
