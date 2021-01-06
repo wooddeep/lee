@@ -16,15 +16,13 @@ pub enum SemanticsType {
 
 #[allow(dead_code)]
 pub struct Parser<'a> {
-    /*
-    constructor(formula) {
-        this.lexer = new Lexer(formula)
-        this.const_map = {} // 变量值存储 ~ 都是全局的变量
-        this.func_map = {} // 函数表
-    }
-    */
-
     pub lexer: &'a mut Lexer,
+}
+
+impl<'a> Parser<'a> {
+    pub fn new(lexer: &'a mut Lexer) -> Self {
+        Parser { lexer }
+    }
 }
 
 impl<'a> Parser<'a> {
@@ -113,12 +111,12 @@ impl<'a> Parser<'a> {
 
 
     #[allow(dead_code)]
-    pub fn parse_term(&mut self) {
+    pub fn parse_term(&mut self) -> Option<Tree>  {
         let left = self.parse_factor();
         let next = self.lexer.lookup(0);
         let token_type = &next.unwrap().token_type;
 
-        self.parse_mul_div(left, token_type);
+        return self.parse_mul_div(left, token_type);
     }
 
     #[allow(dead_code)]

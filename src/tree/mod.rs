@@ -20,7 +20,21 @@ pub struct CompareNode  {
     comparator: String,
 }
 
+pub struct CalcNode  {
+    tree: Tree,
+}
+
+
 impl Tree {
+
+    pub fn get_left_val(&self) -> i32 {
+        0
+    }
+
+    pub fn get_right_val(&self) -> i32 {
+        0
+    }
+
     /*
     pub fn get_val(&self) -> i32 {
         return self.value;

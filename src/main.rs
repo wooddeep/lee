@@ -2,7 +2,7 @@ use std::cell::Cell;
 
 pub mod lexer;   // 文件夹名 作为模块名, 文件夹内模块文件的名称必须为mod.rs
 pub mod parser;
-
+pub mod executor; // 文件名 作为模块名, 测试相关程序放在 test.rs里面
 pub mod tree;
 
 
@@ -13,6 +13,8 @@ pub use crate::lexer::shell;
 pub use crate::lexer::*;
 
 pub use crate::parser::*;
+
+pub use crate::executor::*;
 
 pub use crate::tree::*;
 
@@ -25,7 +27,8 @@ pub fn eat_at_restaurant() {
     lexer::bare_func(); 
 }
 
-mod test; // 文件名 作为模块名, 测试相关程序放在 test.rs里面
+mod test;
+
 
 
 /*
@@ -48,8 +51,11 @@ fn main() {
         println!("{}", element.literal)
     }
 
-    let mut parse = Parser{lexer: &mut lexer};
-    parse.parse_term();
-    //tree_main();
+    let mut parser = Parser{lexer: &mut lexer};
+
+    let mut executor = Executor::new(&mut parser);
+
+    executor.eval();
+
 }
 
