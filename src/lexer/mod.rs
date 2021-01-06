@@ -237,7 +237,7 @@ impl Lexer {
     
     */
 
-    pub fn lookup(&self, n: usize) -> Option<&Token> {
+    pub fn lookup(&mut self, n: usize) -> Option<&Token> {
         //println!("##shit!!!!");
         //println!("##[b] curr_index: {}", self.curr_index.get() + n);
 

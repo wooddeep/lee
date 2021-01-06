@@ -5,35 +5,26 @@ use crate::parser::SemanticsType;
 
 // rust面向对象之继承: https://blog.csdn.net/u010766458/article/details/105403282/
 
-//#[derive(Debug, Default)]
+#[derive(Debug, Clone)]
+pub enum Value {
+    Float(f32),
+    Charset(String),
+}
+
+
+
+#[derive(Clone)]
 pub struct Tree {
-    pub value: i32,
+    pub value: Value,
     pub token_type: TokenType,
     pub semantics_type: SemanticsType,
     pub left: Option<Box<Tree>>,
     pub right: Option<Box<Tree>>
 }
 
-pub struct CompareNode  {
-    tree: Tree,
-    name: String,
-    comparator: String,
-}
-
-pub struct CalcNode  {
-    tree: Tree,
-}
-
 
 impl Tree {
 
-    pub fn get_left_val(&self) -> i32 {
-        0
-    }
-
-    pub fn get_right_val(&self) -> i32 {
-        0
-    }
 
     /*
     pub fn get_val(&self) -> i32 {
@@ -71,33 +62,19 @@ impl Tree {
     */
 }
 
-// 原始的非消耗性遍历:
-// fn traverse(tree: &Tree) {
-//     println!("Node Value: {:?}", tree.value);
-//     if tree.left.is_some() {
-//         // cannot move out of borrowed content
-//         // 首先 unwrap 是一个消耗性操作
-//         // 这是由于 unwrap 函数造成?  as_ref 也不行
-//         traverse((tree.left.as_ref().map(|x| **x).unwrap()).borrow());
-//     }
-//     // if tree.right.is_some() {
-//     //     // cannot move out of borrowed content
-//     //     traverse(tree.right.unwrap().borrow());
-//     // }
-// }
 
 // 非消耗性遍历
-fn traverse(tree: &Tree) {
-    println!("Node Value: {:?}", tree.value);
-    match tree.left {
-        Some(ref x) => traverse(x),
-        _ => {}
-    }
-    match tree.right {
-        Some(ref x) => traverse(x),
-        _ => {}
-    }
-}
+// fn traverse(tree: &Tree) {
+//     println!("Node Value: {:?}", tree.value);
+//     match tree.left {
+//         Some(ref x) => traverse(x),
+//         _ => {}
+//     }
+//     match tree.right {
+//         Some(ref x) => traverse(x),
+//         _ => {}
+//     }
+// }
 
 // 消耗性遍历：
 // fn traverse(tree: Tree) {
@@ -110,17 +87,15 @@ fn traverse(tree: &Tree) {
 //     }
 // }
 
-pub fn tree_main() {
-    /*
-    println!("begin rust tree test:");
-    let mut tree = Tree { value : 12, ..Default::default() };
-    let mut left = Tree { value : 121, ..Default::default() };
-    tree.insert(&String::from("left"), left);
-    let mut right = Tree { value : 122, ..Default::default() };
-    tree.insert(&String::from("right"), right);
-    // tree.delete(&String::from("right"));
-    // println!("Tree val: {:?}", left.get_val()); 不能这样写，所有权已经被移动
-    traverse(&tree);
-    // traverse(tree);
-    */
-}
+// pub fn tree_main() {
+//     println!("begin rust tree test:");
+//     let mut tree = Tree { value : 12, ..Default::default() };
+//     let mut left = Tree { value : 121, ..Default::default() };
+//     tree.insert(&String::from("left"), left);
+//     let mut right = Tree { value : 122, ..Default::default() };
+//     tree.insert(&String::from("right"), right);
+//     // tree.delete(&String::from("right"));
+//     // println!("Tree val: {:?}", left.get_val()); 不能这样写，所有权已经被移动
+//     traverse(&tree);
+//     // traverse(tree);
+// }

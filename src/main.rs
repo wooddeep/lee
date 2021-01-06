@@ -30,20 +30,13 @@ pub fn eat_at_restaurant() {
 mod test;
 
 
-
-/*
-    curr_index: usize,
-    token_list: Vec<Token>,
-    formula: String,
-*/
-
 fn main() {
     //eat_at_restaurant();
     //println!("Hello, world!");
 
     //let mut lexer = Lexer{curr_index: 0, token_list: Vec::new(), formula: String::from("/* coment */hello#abc def\nabc \"123\" \n -90.123f123,;:+-=*/abcd &&& ||")};
 
-    let mut lexer = Lexer{curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from("1 * 2 * 3 * 4 * 5 * 6")};
+    let mut lexer = Lexer{curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from("3 * (4 - 3) / 9 + 3")};
 
     lexer.analyze();
 
