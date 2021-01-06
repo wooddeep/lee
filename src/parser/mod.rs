@@ -34,36 +34,54 @@ impl<'a> Parser<'a> {
     // *   | local NAME "=" expr
     // *   | NAME "[" expr "]" "=" expr  // 字典赋值
 
+    fn match_add_sub(&mut self, token_type: &TokenType) -> bool {
+        match token_type {
+            TokenType::PLUS | TokenType::SUBSTRACT => {
+                return true;
+            }
+            _ => { return false; }
+        }
+    }
+
+    fn parse_add_sub(&mut self, left: Option<Tree>, token_type: &TokenType) -> Option<Tree> {
+        let token = self.lexer.pick();
+
+        match token {
+
+            None => { return left; } // 返回 乘除法的逻辑
+            _ => { println!("##: {}", token.unwrap().literal) }
+        }
+
+        let right = self.parse_term();
+
+        let left_node = Some(Box::new(left.unwrap()));
+        let right_node = Some(Box::new(right.unwrap()));
+
+        let left = Tree {
+            value: Value::Float(0f32),
+            token_type: *token_type,//TokenType::Number,
+            semantics_type: SemanticsType::Calculate,
+            left: left_node,
+            right: right_node,
+        };
+
+        let next = self.lexer.lookup(0);
+        let token_type = &next.unwrap().token_type.clone();
+        //let token_type = &TokenType::MULTIP;
+        if !self.match_add_sub(token_type) { return Some(left); }
+
+        self.parse_add_sub(Some(left), token_type)
+    }
+
+
     pub fn parse_expr(&mut self) -> Option<Tree> {
         let left = self.parse_term();
 
-        loop {
+        let next = self.lexer.lookup(0);
+        let token_type = &next.unwrap().token_type.clone();
 
-            let token = self.lexer.lookup(0).unwrap();
-
-            match token.token_type {
-                TokenType::PLUS | TokenType::SUBSTRACT => (), // + 获取 - 则循环
-                _ => break,
-            }
-
-            let token_type = token.token_type.clone();
-
-            self.lexer.pick(); // 去掉加减号
-
-            let right = self.parse_term();
-
-            let left = Tree {
-                value: Value::Float(0f32),
-                token_type,//TokenType::Number,
-                semantics_type: SemanticsType::Calculate,
-                left: Some(Box::new(left.clone().unwrap())),
-                right: Some(Box::new(right.clone().unwrap())),
-            };
-        }
-
-        left
+        return self.parse_add_sub(left, token_type);
     }
-
 
     // term: factor { ("*" | "/") factor }
     //  | factor ">" factor
@@ -144,9 +162,9 @@ impl<'a> Parser<'a> {
     }
 
 
-    #[allow(dead_code)]
     pub fn parse_term(&mut self) -> Option<Tree> {
         let left = self.parse_factor();
+
         let next = self.lexer.lookup(0);
         let token_type = &next.unwrap().token_type.clone();
 
