@@ -44,10 +44,11 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_add_sub(&mut self, left: Option<Tree>, token_type: &TokenType) -> Option<Tree> {
+
+        if !self.match_add_sub(token_type) { return left; }
+
         let token = self.lexer.pick();
-
         match token {
-
             None => { return left; } // 返回 乘除法的逻辑
             _ => { println!("##: {}", token.unwrap().literal) }
         }
@@ -67,12 +68,9 @@ impl<'a> Parser<'a> {
 
         let next = self.lexer.lookup(0);
         let token_type = &next.unwrap().token_type.clone();
-        //let token_type = &TokenType::MULTIP;
-        if !self.match_add_sub(token_type) { return Some(left); }
 
         self.parse_add_sub(Some(left), token_type)
     }
-
 
     pub fn parse_expr(&mut self) -> Option<Tree> {
         let left = self.parse_term();
@@ -82,45 +80,6 @@ impl<'a> Parser<'a> {
 
         return self.parse_add_sub(left, token_type);
     }
-
-    // term: factor { ("*" | "/") factor }
-    //  | factor ">" factor
-    //  | factor ">=" factor
-    //  | factor "<" factor
-    //  | factor "<=" factor
-    //  | factor "==" factor
-
-    /*
-    parse_term() {
-        var left =  this.parse_factor()
-
-        var next = this.lexer.lookup()
-
-        if (/(>)|(>=)|(<)|(<=)|(==)|(!=)/.exec(next) != null) {
-            var token = this.lexer.pick()
-            var right = this.parse_factor()
-            var out = {
-                "oper": "cmp", // 比较
-                "token": token,
-                "left": left,
-                "right": right
-            }
-            return out
-        }
-
-        while ( this.lexer.lookup() == "*" ||  this.lexer.lookup() == "/") {
-            var oper =  this.lexer.pick()
-            var right = this.parse_factor()
-            var left = {
-                "left": left,
-                "oper": oper,
-                "right": right
-            }
-        }
-
-        return left
-    }
-    */
 
     fn match_mul_div(&mut self, token_type: &TokenType) -> bool {
         match token_type {
@@ -133,8 +92,10 @@ impl<'a> Parser<'a> {
 
 
     fn parse_mul_div(&mut self, left: Option<Tree>, token_type: &TokenType) -> Option<Tree> {
-        let token = self.lexer.pick();
 
+        if !self.match_mul_div(token_type) { return left; }
+
+        let token = self.lexer.pick();
         match token {
             None => { return left; } // 返回 乘除法的逻辑
             _ => { println!("##: {}", token.unwrap().literal) }
@@ -155,8 +116,6 @@ impl<'a> Parser<'a> {
 
         let next = self.lexer.lookup(0);
         let token_type = &next.unwrap().token_type.clone();
-        //let token_type = &TokenType::MULTIP;
-        if !self.match_mul_div(token_type) { return Some(left); }
 
         self.parse_mul_div(Some(left), token_type)
     }
