@@ -19,8 +19,63 @@ mod tests {
     // this.formula = formula
     // this.analyze(this.formula) 
 
+    struct Bird {
+        wing: String,
+    }
 
-    #[test]
+    struct Eagle {
+        bird: Bird,
+        view: f32,
+    }
+
+    use std::any::Any;
+    trait Fly {
+        fn as_any(&self) -> &dyn Any;
+        // fn as_any(&self) -> &dyn Any {
+        //     self
+        // }
+
+        fn bird_type(&self) -> i32;
+    }
+
+    impl Fly for Bird {
+        fn as_any(&self) -> &dyn Any {
+            self
+        }
+
+        fn bird_type(&self) -> i32 {
+            0 // base type
+        }
+    }
+
+    impl Fly for Eagle {
+        fn as_any(&self) -> &dyn Any {
+            self
+        }
+
+        fn bird_type(&self) -> i32 {
+            1 // eagle
+        }
+    }
+
+    fn show_bird(bird: &impl Fly) {
+        if bird.bird_type() == 1 {
+            let eagle = match bird.as_any().downcast_ref::<Eagle>() {
+                Some(b) => b,
+                None => panic!("&a isn't a B!")
+            };
+            println!("{}", eagle.bird.wing);
+        }
+
+    }
+
+    //#[test] // cargo test -- --nocapture
+    fn test() {
+        let eagle: Eagle = Eagle{bird: Bird{wing: String::from("eagle's wing")}, view: 1000f32};
+        show_bird(&eagle);
+    }
+
+    //#[test]
     fn it_works(){  // cargo test -- --nocapture 
         
         //let s = "/* coment */hello#abc def\nabc \"123\" \n -90.123f123,;:+-=*/abcd &&& ||";

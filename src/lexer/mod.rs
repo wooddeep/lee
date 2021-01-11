@@ -1,6 +1,7 @@
 use std::cell::Cell;
 use regex::{Regex};
 
+
 pub mod shell {
     pub fn test() {
         println!("in the named module!")
@@ -25,30 +26,66 @@ pub enum TokenType {
     SingleLineComment,
     Identifier,
     Number,
-    Comma,  // ,
-    Colon,  // :
-    Semicolon, // ;
-    LeftCurve, // (
-    RightCurve, // )
-    LeftSquare, // [
-    RightSquare, // ]
-    LeftBraces, // {
-    RightBraces, // }
+    Comma,
+    // ,
+    Colon,
+    // :
+    Semicolon,
+    // ;
+    LeftCurve,
+    // (
+    RightCurve,
+    // )
+    LeftSquare,
+    // [
+    RightSquare,
+    // ]
+    LeftBraces,
+    // {
+    RightBraces,
+    // }
+    If,
+    Else,
+    While,
+    Func,
     STRING,
-    PLUS, // +
-    SUBSTRACT, // - 
-    MULTIP, // *
-    DIVIDER, // /
-    ASSIGN, // =
-    GT, // >
-    LT, // <
-    GE, // >=
-    LE, // <=
-    EQ, // ==
-    AND, // &&
-    OR,  // ||
+    PLUS,
+    // +
+    SUBSTRACT,
+    // -
+    MULTIP,
+    // *
+    DIVIDER,
+    // /
+    ASSIGN,
+    // =
+    GT,
+    // >
+    LT,
+    // <
+    GE,
+    // >=
+    LE,
+    // <=
+    EQ,
+    // ==
+    AND,
+    // &&
+    OR,
+    // ||
     EOL,
 }
+
+
+impl PartialEq for TokenType {
+    fn eq(&self, other: &Self) -> bool {
+        match self {
+            other => {return true},
+            _ => {return false},
+        }
+    }
+}
+
 
 pub struct Token {
     pub literal: String,
@@ -58,7 +95,6 @@ pub struct Token {
 //use crate::TokenType;
 
 impl Lexer {
-
     pub fn analyze(&mut self) {
         //let s = "/* coment */hello#abc def\nabc \"123\" \n -90.123f123,;:+-=*/abcd &&& ||";
         let r = Regex::new(r#"(?s)/\*[^/]*\*/|#[^\n]*|[_a-zA-Z][\-_a-zA-Z0-9]*|"[^"]*"|\-?[0-9]+\.?[0-9]*[lf]*|[,:;\+\-\*/=\(\)\{\}\[\]]|>|<|>=|<=|==|!=|>>|<<|&&|\|\|"#).unwrap();
@@ -71,127 +107,142 @@ impl Lexer {
         for (_i, c) in r.captures_iter(&self.formula).enumerate() {
             for j in 0..c.len() {
                 if regex_multi_comment.is_match(&c[j]) {
-                    let token = Token{literal: String::from(&c[j]), token_type: TokenType::MultipleLineComment};
+                    let token = Token { literal: String::from(&c[j]), token_type: TokenType::MultipleLineComment };
                     self.token_list.push(token);
                     break;
                 }
 
                 if regex_single_comment.is_match(&c[j]) {
-                    let token = Token{literal: String::from(&c[j]), token_type: TokenType::SingleLineComment};
+                    let token = Token { literal: String::from(&c[j]), token_type: TokenType::SingleLineComment };
                     self.token_list.push(token);
                     break;
                 }
 
                 if regex_identifier.is_match(&c[j]) {
-                    let token = Token{literal: String::from(&c[j]), token_type: TokenType::Identifier};
-                    self.token_list.push(token);
+                    let literal = &c[j];
+                    if literal.eq("if") {
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::If };
+                        self.token_list.push(token);
+                    } else if literal.eq("else") {
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::Else };
+                        self.token_list.push(token);
+                    } else if literal.eq("while") {
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::While };
+                        self.token_list.push(token);
+                    } else if literal.eq("func") {
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::Func };
+                        self.token_list.push(token);
+                    } else {
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::Identifier };
+                        self.token_list.push(token);
+                    }
                     break;
                 }
 
                 if regex_string.is_match(&c[j]) {
-                    let token = Token{literal: String::from(&c[j]), token_type: TokenType::STRING};
+                    let token = Token { literal: String::from(&c[j]), token_type: TokenType::STRING };
                     self.token_list.push(token);
                     break;
                 }
 
                 if regex_number.is_match(&c[j]) {
-                    let token = Token{literal: String::from(&c[j]), token_type: TokenType::Number};
+                    let token = Token { literal: String::from(&c[j]), token_type: TokenType::Number };
                     self.token_list.push(token);
                     break;
                 }
-                
+
                 match &c[j] {
                     "+" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::PLUS};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::PLUS };
                         self.token_list.push(token);
-                    },
+                    }
 
                     "-" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::SUBSTRACT};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::SUBSTRACT };
                         self.token_list.push(token);
-                    },
+                    }
 
                     "*" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::MULTIP};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::MULTIP };
                         self.token_list.push(token);
-                    },
+                    }
 
                     "/" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::DIVIDER};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::DIVIDER };
                         self.token_list.push(token);
-                    },
+                    }
 
                     "=" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::ASSIGN};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::ASSIGN };
                         self.token_list.push(token);
-                    },
-                    
+                    }
+
                     "(" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::LeftCurve};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::LeftCurve };
                         self.token_list.push(token);
-                    },
+                    }
 
                     ")" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::RightCurve};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::RightCurve };
                         self.token_list.push(token);
-                    },
+                    }
 
                     "[" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::LeftSquare};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::LeftSquare };
                         self.token_list.push(token);
-                    },
+                    }
 
                     "]" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::RightSquare};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::RightSquare };
                         self.token_list.push(token);
-                    },
+                    }
 
                     "{" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::LeftBraces};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::LeftBraces };
                         self.token_list.push(token);
-                    },
+                    }
 
                     "}" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::RightBraces};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::RightBraces };
                         self.token_list.push(token);
-                    },
+                    }
 
                     ">" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::GT};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::GT };
                         self.token_list.push(token);
-                    },
+                    }
 
                     "<" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::LT};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::LT };
                         self.token_list.push(token);
-                    },
+                    }
 
                     ">=" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::GE};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::GE };
                         self.token_list.push(token);
-                    },
+                    }
 
                     "<=" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::LE};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::LE };
                         self.token_list.push(token);
-                    },
+                    }
 
                     "==" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::EQ};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::EQ };
                         self.token_list.push(token);
-                    },
+                    }
 
                     "&&" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::AND};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::AND };
                         self.token_list.push(token);
-                    },
+                    }
 
                     "||" => {
-                        let token = Token{literal: String::from(&c[j]), token_type: TokenType::OR};
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::OR };
                         self.token_list.push(token);
-                    },
+                    }
                     //_ => println!("group {},{} : {}", _i, j, &c[j]),
-                    _ => {},
+                    _ => {}
                 }
             }
         }
@@ -210,9 +261,8 @@ impl Lexer {
     */
 
     pub fn pick(&self) -> Option<&Token> {
-        
         if self.curr_index.get() == self.token_list.len() - 1 {
-            return None
+            return None;
         }
 
         //println!("##[a] curr_index: {}", self.curr_index.get());
@@ -221,7 +271,7 @@ impl Lexer {
 
         self.curr_index.set(new_val);
 
-        
+
         return Some(&self.token_list[self.curr_index.get() - 1]);
     }
 

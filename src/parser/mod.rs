@@ -13,6 +13,7 @@ pub enum SemanticsType {
     Assignment,
     Compare,
     MapSet,
+    Condition,
 }
 
 #[allow(dead_code)]
@@ -27,7 +28,33 @@ impl<'a> Parser<'a> {
 }
 
 impl<'a> Parser<'a> {
+    // /*
+    //  * statement: "if" expr block [ "else" block ]
+    //  *       | "while" expr block
+    //  *       | "func" FUNCNAME "(" plist ")" block
+    //  *       | expr
+    //  */
+    fn parse_statement(&mut self) -> Option<Tree> {
+        let token_type = self.lexer.lookup(0).unwrap().token_type;
+        if token_type == TokenType::If {
+            self.lexer.pick();
+            //let cond = self.parse_expr();
+            let block = self.parse_block();
+            let left = Tree {
+                value: Value::Float(0f32),
+                token_type: token_type.clone(),//TokenType::Number,
+                semantics_type: SemanticsType::Condition,
+                left: Some(Box::new(block.unwrap())),
+                right: None,
+            };
+            return Some(left);
+        }
+        return None;
+    }
 
+    fn parse_block(&mut self) -> Option<Tree> {
+        return None;
+    }
 
     // * expr: term { ("+" | "-") term }
     // *   | NAME "=" expr
@@ -44,7 +71,6 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_add_sub(&mut self, left: Option<Tree>, token_type: &TokenType) -> Option<Tree> {
-
         if !self.match_add_sub(token_type) { return left; }
 
         let token = self.lexer.pick();
@@ -92,7 +118,6 @@ impl<'a> Parser<'a> {
 
 
     fn parse_mul_div(&mut self, left: Option<Tree>, token_type: &TokenType) -> Option<Tree> {
-
         if !self.match_mul_div(token_type) { return left; }
 
         let token = self.lexer.pick();
@@ -131,7 +156,7 @@ impl<'a> Parser<'a> {
     }
 
 
-    // factor: NUMBER  // TODO，加上 "-" NUMBER
+    // factor: NUMBER
     // | "(" expr ")"
     // | NAME
     // | NMAE "[" STRING "]"  // 字典取数
@@ -164,7 +189,59 @@ impl<'a> Parser<'a> {
 
             TokenType::STRING => {
                 let usize = token.unwrap().literal.as_str().len();
-                let val = token.unwrap().literal.as_str()[1..usize-1].to_string();
+                let val = token.unwrap().literal.as_str()[1..usize - 1].to_string();
+                println!("value = {}", val);
+                self.lexer.pick(); // 取数
+
+                let tree = Tree {
+                    value: Value::Charset(val),
+                    token_type: TokenType::Number,
+                    semantics_type: SemanticsType::Direct,
+                    left: None,
+                    right: None,
+                };
+
+                Some(tree)
+            }
+
+            TokenType::LeftCurve => {
+                self.lexer.pick(); // 去掉左括号
+                let expr = self.parse_expr();
+                self.lexer.pick(); // 去掉右括号
+                expr
+            }
+
+            _ => {
+                None
+            }
+        };
+    }
+
+    pub fn _parse_factor(&mut self) -> Option<Tree> {
+        let token = self.lexer.lookup(0);
+
+        let token_type = &token.unwrap().token_type;
+
+        return match token_type {
+            TokenType::Number => {
+                let val = token.unwrap().literal.parse::<f32>().unwrap();
+                println!("value = {}", val);
+                self.lexer.pick(); // 取数
+
+                let tree = Tree {
+                    value: Value::Float(val),
+                    token_type: TokenType::Number,
+                    semantics_type: SemanticsType::Direct,
+                    left: None,
+                    right: None,
+                };
+
+                Some(tree)
+            }
+
+            TokenType::STRING => {
+                let usize = token.unwrap().literal.as_str().len();
+                let val = token.unwrap().literal.as_str()[1..usize - 1].to_string();
                 println!("value = {}", val);
                 self.lexer.pick(); // 取数
 
