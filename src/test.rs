@@ -5,8 +5,13 @@ mod tests {
     use regex::{Regex, Captures, Error};
     use std::ops::Index;
     //use itertools::Itertools;
+    pub use crate::lexer::shell;
+    pub use crate::lexer;
 
-
+    pub fn test_mod_embed() {
+        shell::test();
+        lexer::bare_func();
+    }
     // this.token_patt = /\/\*.*\*\/|#[^\n]*\n|[_a-zA-Z][\-_a-zA-Z0-9]*|".*?"|\-?[0-9]+\.?[0-9]*[lf]*|[,:;\+\-\*/=\(\)\{\}\[\]]|>|<|>=|<=|==|!=|>>|<<|&&|\|\|/gm
     // //this.token_patt = /([_a-zA-Z][\-_a-zA-Z0-9]*|".*?"|\-?[0-9]+(.[0-9]+)?[fl]?|[,:;+\-*/=\(\)\{\}]|>|<|>=|<=|==|!=|>>|<<|&&|\|\|)/gm
     // this.curr_index = 0
@@ -15,16 +20,17 @@ mod tests {
     // this.analyze(this.formula) 
 
 
-    //#[test]
+    #[test]
     fn it_works(){  // cargo test -- --nocapture 
         
-        let s = "/* coment */hello#abc def\nabc \"123\" \n -90.123f123,;:+-=*/abcd &&& ||";
-        let r = Regex::new(r#"(?s)/\*[^/]*\*/|#[^\n]*|[_a-zA-Z][\-_a-zA-Z0-9]*|".*"|\-?[0-9]+\.?[0-9]*[lf]*|[,:;\+\-\*/=\(\)\{\}\[\]]|>|<|>=|<=|==|!=|>>|<<|&&|\|\|"#).unwrap();
+        //let s = "/* coment */hello#abc def\nabc \"123\" \n -90.123f123,;:+-=*/abcd &&& ||";
+        let s = r#""hello" + "word""#;
+        let r = Regex::new(r#"(?s)/\*[^/]*\*/|#[^\n]*|[_a-zA-Z][\-_a-zA-Z0-9]*|"[^"]*"|\-?[0-9]+\.?[0-9]*[lf]*|[,:;\+\-\*/=\(\)\{\}\[\]]|>|<|>=|<=|==|!=|>>|<<|&&|\|\|"#).unwrap();
 
         let regex_multi_comment = Regex::new(r#"(?s)/\*[^/]*\*/"#).unwrap();
         let regex_single_comment = Regex::new(r#"#[^\n]*"#).unwrap();
         let regex_identifier = Regex::new(r#"^[_a-zA-Z][\-_a-zA-Z0-9]*"#).unwrap();
-        let regex_string = Regex::new(r#"".*""#).unwrap();
+        let regex_string = Regex::new(r#""[^"]*""#).unwrap();
         let regex_number = Regex::new(r#"\-?[0-9]+\.?[0-9]*[lf]*"#).unwrap();
 
 

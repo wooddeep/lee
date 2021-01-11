@@ -162,6 +162,23 @@ impl<'a> Parser<'a> {
                 Some(tree)
             }
 
+            TokenType::STRING => {
+                let usize = token.unwrap().literal.as_str().len();
+                let val = token.unwrap().literal.as_str()[1..usize-1].to_string();
+                println!("value = {}", val);
+                self.lexer.pick(); // 取数
+
+                let tree = Tree {
+                    value: Value::Charset(val),
+                    token_type: TokenType::Number,
+                    semantics_type: SemanticsType::Direct,
+                    left: None,
+                    right: None,
+                };
+
+                Some(tree)
+            }
+
             TokenType::LeftCurve => {
                 self.lexer.pick(); // 去掉左括号
                 let expr = self.parse_expr();
