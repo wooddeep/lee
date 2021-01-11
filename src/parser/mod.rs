@@ -2,6 +2,7 @@ use crate::lexer::*;
 use crate::tree::*;
 use std::collections::HashMap;
 use std::cell::RefCell;
+use std::any::Any;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone)]
@@ -217,7 +218,7 @@ impl<'a> Parser<'a> {
         };
     }
 
-    pub fn _parse_factor(&mut self) -> Option<Tree> {
+    pub fn _parse_factor(&mut self) -> Option<Any> {
         let token = self.lexer.lookup(0);
 
         let token_type = &token.unwrap().token_type;
