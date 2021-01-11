@@ -59,6 +59,7 @@ impl<'a> Executor<'a> {
 
                         return Value::Float(lv * rv);
                     }
+
                     TokenType::DIVIDER => {
                         let lv = match left_val {
                             Value::Float(v) => v,
@@ -72,24 +73,33 @@ impl<'a> Executor<'a> {
 
                         return Value::Float(lv / rv);
                     }
+
                     TokenType::PLUS => {
                         let lv = match left_val {
-                            Value::Float(v) => v,
+                            Value::Float(v) => (v, None),
+                            Value::Charset(s) => (0f32, Some(s)),
                             _ => panic!("undefine value type"),
                         };
 
                         let rv = match right_val {
-                            Value::Float(v) => {
-                                if v == 0f32 {
-                                    panic!("## divid by zero error!")
-                                } else {
-                                    v
-                                }
-                            },
+                            Value::Float(v) => (v, None),
+                            Value::Charset(s) => (0f32, Some(s)),
                             _ => panic!("undefine value type"),
                         };
 
-                        return Value::Float(lv + rv);
+                        if lv.1 == None && rv.1 == None { // 1. 0 + 2.0 = 3.0
+                            return Value::Float(lv.0 + rv.0);
+                        }
+
+                        if lv.1 == None && rv.1 != None { // 1 + "abc" = "1abc"
+                            return Value::Charset(lv.0.to_string() + &rv.1.unwrap());
+                        }
+
+                        if lv.1 != None && rv.1 == None { // 1 + "abc" = "1abc"
+                            return Value::Charset(lv.1.unwrap() + rv.0.to_string().as_str());
+                        }
+
+                        return Value::Charset(lv.1.unwrap() + &rv.1.unwrap());
                     }
 
                     TokenType::SUBSTRACT => {

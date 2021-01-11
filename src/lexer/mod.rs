@@ -61,11 +61,11 @@ impl Lexer {
 
     pub fn analyze(&mut self) {
         //let s = "/* coment */hello#abc def\nabc \"123\" \n -90.123f123,;:+-=*/abcd &&& ||";
-        let r = Regex::new(r#"(?s)/\*[^/]*\*/|#[^\n]*|[_a-zA-Z][\-_a-zA-Z0-9]*|".*"|\-?[0-9]+\.?[0-9]*[lf]*|[,:;\+\-\*/=\(\)\{\}\[\]]|>|<|>=|<=|==|!=|>>|<<|&&|\|\|"#).unwrap();
+        let r = Regex::new(r#"(?s)/\*[^/]*\*/|#[^\n]*|[_a-zA-Z][\-_a-zA-Z0-9]*|"[^"]*"|\-?[0-9]+\.?[0-9]*[lf]*|[,:;\+\-\*/=\(\)\{\}\[\]]|>|<|>=|<=|==|!=|>>|<<|&&|\|\|"#).unwrap();
         let regex_multi_comment = Regex::new(r#"(?s)/\*[^/]*\*/"#).unwrap();
         let regex_single_comment = Regex::new(r#"#[^\n]*"#).unwrap();
         let regex_identifier = Regex::new(r#"^[_a-zA-Z][\-_a-zA-Z0-9]*"#).unwrap();
-        let regex_string = Regex::new(r#"".*""#).unwrap();
+        let regex_string = Regex::new(r#""[^"]*""#).unwrap();
         let regex_number = Regex::new(r#"\-?[0-9]+\.?[0-9]*[lf]*"#).unwrap();
 
         for (_i, c) in r.captures_iter(&self.formula).enumerate() {
