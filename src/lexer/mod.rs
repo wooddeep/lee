@@ -48,7 +48,7 @@ pub enum TokenType {
     If,
     Else,
     While,
-    Func,
+    Func, // def
     STRING,
     PLUS,
     // +
@@ -130,7 +130,7 @@ impl Lexer {
                     } else if literal.eq("while") {
                         let token = Token { literal: String::from(&c[j]), token_type: TokenType::While };
                         self.token_list.push(token);
-                    } else if literal.eq("func") {
+                    } else if literal.eq("def") {
                         let token = Token { literal: String::from(&c[j]), token_type: TokenType::Func };
                         self.token_list.push(token);
                     } else {

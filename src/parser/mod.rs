@@ -29,8 +29,47 @@ impl<'a> Parser<'a> {
 }
 
 impl<'a> Parser<'a> {
+    // /*
+    //  * program: statement { ";" statement }
+    //  */
+    pub fn parse_program(&mut self) -> Vec<Etree> {
+        let mut out: Vec<Etree> = Vec::new(); // 输出代码块列表
 
-    
+        let stmt = self.parse_statement().unwrap();
+        match &stmt {
+            Etree::Tree(tree) => {
+                if tree.token_type == TokenType::Func {
+                    // TODO 记录函数表
+                } else {
+                    out.push(stmt);
+                }
+            }
+            _ => {}
+        }
+
+        while self.lexer.lookup(0).unwrap().token_type == TokenType::Semicolon {
+            self.lexer.pick();
+            let stmt = self.parse_statement();
+            match stmt {
+                None => break,
+                Some(etree) => {
+                    match &etree {
+                        Etree::Tree(tree) => {
+                            if tree.token_type == TokenType::Func {
+                                // TODO 记录函数表
+                            } else {
+                                out.push(etree);
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+
+        return out;
+    }
+
 
     // /*
     //  * statement: "if" expr block [ "else" block ]
