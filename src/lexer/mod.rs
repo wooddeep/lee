@@ -22,6 +22,7 @@ pub struct Lexer {
 #[allow(dead_code)]
 #[derive(Copy, Clone)]
 #[derive(PartialEq)]
+#[derive(Debug)]
 pub enum TokenType {
     MultipleLineComment,
     SingleLineComment,
@@ -153,6 +154,21 @@ impl Lexer {
                 }
 
                 match &c[j] {
+                    ";" => {
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::Semicolon };
+                        self.token_list.push(token);
+                    }
+
+                    ":" => {
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::Colon };
+                        self.token_list.push(token);
+                    }
+
+                    "," => {
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::Comma };
+                        self.token_list.push(token);
+                    }
+
                     "+" => {
                         let token = Token { literal: String::from(&c[j]), token_type: TokenType::PLUS };
                         self.token_list.push(token);

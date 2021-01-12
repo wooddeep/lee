@@ -47,6 +47,8 @@ impl<'a> Parser<'a> {
             _ => {}
         }
 
+        println!("{:?}", self.lexer.lookup(0).unwrap().token_type);
+
         while self.lexer.lookup(0).unwrap().token_type == TokenType::Semicolon {
             self.lexer.pick();
             let stmt = self.parse_statement();
@@ -100,7 +102,11 @@ impl<'a> Parser<'a> {
             return Some(Etree::IfTree(left));
         } else {
             let expr = self.parse_expr();
-            return Some(Etree::Tree(expr.unwrap()));
+            match &expr {
+                Some(tree) => return Some(Etree::Tree(expr.unwrap())),
+                _ => return None
+            }
+            //return Some(Etree::Tree(expr.unwrap()));
         }
         return None;
     }
@@ -188,7 +194,6 @@ impl<'a> Parser<'a> {
         }
     }
 
-
     fn parse_mul_div(&mut self, left: Option<Tree>, token_type: &TokenType) -> Option<Tree> {
         if !self.match_mul_div(token_type) { return left; }
 
@@ -200,36 +205,8 @@ impl<'a> Parser<'a> {
 
         let right = self.parse_factor();
 
-        // match right.unwrap().get_type() {
-        //     TreeType::BaseTree => { // 基础节点
-        //         match right.unwrap().as_any().downcast_ref::<Tree>() { // 类型转换
-        //             Some(t) => {
-        //                 t;
-        //                 let left_node = Some(Box::new(left.unwrap()));
-        //                 let right_node = Some(Box::new(right.unwrap()));
-        //
-        //                 let left = Tree {
-        //                     value: Value::Float(0f32),
-        //                     token_type: *token_type,//TokenType::Number,
-        //                     semantics_type: SemanticsType::Calculate,
-        //                     left: left_node,
-        //                     right: right_node,
-        //                 };
-        //
-        //                 let next = self.lexer.lookup(0);
-        //                 let token_type = &next.unwrap().token_type.clone();
-        //                 return self.parse_mul_div(Some(left), token_type);
-        //             },
-        //
-        //             None => panic!("&a isn't a B!")
-        //         };
-        //     },
-        //     _ => return None,
-        // }
-
         let left_node = Some(Box::new(left.unwrap()));
         let right_node = Some(Box::new(right.unwrap()));
-
 
         let left = Tree {
             value: Value::Float(0f32),
