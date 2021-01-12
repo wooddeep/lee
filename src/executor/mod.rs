@@ -17,6 +17,36 @@ impl<'a> Executor<'a> {
         self.parser
     }
 
+    pub fn eval_stmt(&mut self) {
+        let et = self.parser.parse_statement().unwrap();
+
+
+        match et {
+            Etree::Tree(tree) => {
+                match tree.token_type {
+                    TokenType::MULTIP | TokenType::DIVIDER | TokenType::PLUS | TokenType::SUBSTRACT => {
+                        let value = self.eval_num_calc(&tree);
+                        println!("## result = {:?}", value)
+                    },
+                    _ => {}
+                }
+
+                ()
+            },
+            Etree::IfTree(tree) => {
+                // match tree.token_type {
+                //     TokenType::MULTIP | TokenType::DIVIDER | TokenType::PLUS | TokenType::SUBSTRACT => {
+                //         let value = self.eval_num_calc(&tree);
+                //         println!("## result = {:?}", value)
+                //     }
+                //     _ => {}
+                // }
+                //
+                ()
+            }
+        }
+    }
+
     pub fn eval(&mut self) {
         let ot = self.parser.parse_expr();
 

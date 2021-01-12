@@ -29,13 +29,16 @@ impl<'a> Parser<'a> {
 }
 
 impl<'a> Parser<'a> {
+
+    
+
     // /*
     //  * statement: "if" expr block [ "else" block ]
     //  *       | "while" expr block
     //  *       | "func" FUNCNAME "(" plist ")" block
     //  *       | expr
     //  */
-    fn parse_statement(&mut self) -> Option<Etree> {
+    pub fn parse_statement(&mut self) -> Option<Etree> {
         let token_type = self.lexer.lookup(0).unwrap().token_type;
         if token_type == TokenType::If {
             self.lexer.pick();
@@ -56,6 +59,9 @@ impl<'a> Parser<'a> {
             }
 
             return Some(Etree::IfTree(left));
+        } else {
+            let expr = self.parse_expr();
+            return Some(Etree::Tree(expr.unwrap()));
         }
         return None;
     }
@@ -66,7 +72,7 @@ impl<'a> Parser<'a> {
     //  */
     fn parse_block(&mut self) -> Option<Vec<Etree>> {
         let mut out: Vec<Etree> = Vec::new(); // 输出代码块列表
-        
+
         if self.lexer.lookup(0).unwrap().token_type == TokenType::LeftBraces {
             self.lexer.pick();
             let statement = self.parse_statement();

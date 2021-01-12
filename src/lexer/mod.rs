@@ -21,6 +21,7 @@ pub struct Lexer {
 
 #[allow(dead_code)]
 #[derive(Copy, Clone)]
+#[derive(PartialEq)]
 pub enum TokenType {
     MultipleLineComment,
     SingleLineComment,
@@ -77,14 +78,14 @@ pub enum TokenType {
 }
 
 
-impl PartialEq for TokenType {
-    fn eq(&self, other: &Self) -> bool {
-        match self {
-            other => {return true},
-            _ => {return false},
-        }
-    }
-}
+// impl PartialEq for TokenType {
+//     fn eq(&self, other: &Self) -> bool {
+//         match self {
+//             other => {return true},
+//             _ => {return false},
+//         }
+//     }
+// }
 
 
 pub struct Token {

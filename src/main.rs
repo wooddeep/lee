@@ -32,7 +32,7 @@ fn main() {
 
     let mut executor = Executor::new(&mut parser);
 
-    executor.eval();
+    executor.eval_stmt();
 
 }
 
