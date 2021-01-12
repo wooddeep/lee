@@ -7,6 +7,7 @@ mod tests {
     //use itertools::Itertools;
     pub use crate::lexer::shell;
     pub use crate::lexer;
+    use std::any::Any;
 
     pub fn test_mod_embed() {
         shell::test();
@@ -28,7 +29,7 @@ mod tests {
         view: f32,
     }
 
-    use std::any::Any;
+
     trait Fly {
         fn as_any(&self) -> &dyn Any;
         // fn as_any(&self) -> &dyn Any {
