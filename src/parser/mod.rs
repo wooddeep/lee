@@ -3,6 +3,7 @@ use crate::tree::*;
 use std::collections::HashMap;
 use std::cell::RefCell;
 use std::any::Any;
+use crate::tree;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone)]
@@ -20,15 +21,26 @@ pub enum SemanticsType {
 #[allow(dead_code)]
 pub struct Parser<'a> {
     pub lexer: &'a mut Lexer,
+    pub func_map: HashMap<String, Etree>,
 }
 
 impl<'a> Parser<'a> {
-    pub fn new(lexer: &'a mut Lexer) -> Self {
-        Parser { lexer }
+    pub fn new(lexer: &'a mut Lexer, func_map: HashMap<String, Etree>) -> Self {
+        Parser { lexer, func_map }
     }
 }
 
+/*
 impl<'a> Parser<'a> {
+    pub fn new(lexer: &'a mut Lexer) -> Self {
+        Parser { lexer, func_map: HashMap::new() }
+    }
+}
+*/
+
+
+impl<'a> Parser<'a> {
+
     // /*
     //  * program: statement { ";" statement }
     //  */
@@ -81,7 +93,23 @@ impl<'a> Parser<'a> {
     //  */
     pub fn parse_statement(&mut self) -> Option<Etree> {
         let token_type = self.lexer.lookup(0).unwrap().token_type;
-        if token_type == TokenType::If {
+
+        if token_type == TokenType::Func {
+            self.lexer.pick(); // 去掉 "func"
+            let func_name = self.lexer.pick().unwrap().literal.clone(); // 函数名称
+            self.lexer.pick(); // 去掉左括号
+            let plist = self.parse_plist(); // 参数列表
+            self.lexer.pick(); // 去掉右括号
+            let func_body = self.parse_block(); // 函数体
+            let func_tree = FuncTree {
+                func_name,
+                plist: Some(Box::new(plist.unwrap())),
+                fbody: Some(Box::new(func_body.unwrap())),
+            };
+
+            return Some(Etree::FuncTree(func_tree));
+
+        } else if token_type == TokenType::If {
             self.lexer.pick();
             let condition = self.parse_expr();
             let if_branch = self.parse_block();
@@ -111,6 +139,12 @@ impl<'a> Parser<'a> {
         return None;
     }
 
+    // /*
+    //  * plist: "" | NAME {, NAME}
+    //  */
+    fn parse_plist(&mut self) -> Option<Vec<Etree>> {
+        return None
+    }
 
     // /*
     //  * block: "{" [ statement ] { ((";" | EOL) [statement]} "}"

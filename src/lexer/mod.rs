@@ -131,7 +131,7 @@ impl Lexer {
                     } else if literal.eq("while") {
                         let token = Token { literal: String::from(&c[j]), token_type: TokenType::While };
                         self.token_list.push(token);
-                    } else if literal.eq("def") {
+                    } else if literal.eq("func") {
                         let token = Token { literal: String::from(&c[j]), token_type: TokenType::Func };
                         self.token_list.push(token);
                     } else {

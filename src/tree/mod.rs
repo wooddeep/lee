@@ -27,15 +27,24 @@ pub struct IfTree {
     pub else_branch: Option<Box<Vec<Etree>>>,
 }
 
+#[derive(Clone)]
+pub struct FuncTree {
+    pub func_name: String,
+    pub plist: Option<Box<Vec<Etree>>>,
+    pub fbody: Option<Box<Vec<Etree>>>,
+}
+
 pub enum TreeType {
     BaseTree,
     IfTree,
+    FuncTree,
 }
 
 #[derive(Clone)]
 pub enum Etree {
     Tree(Tree),
     IfTree(IfTree),
+    FuncTree(FuncTree),
 }
 
 pub trait TreeAct {
@@ -56,6 +65,16 @@ impl TreeAct for Tree {
 impl TreeAct for IfTree {
     fn get_type(&self) -> TreeType {
         return TreeType::IfTree;
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+}
+
+impl TreeAct for FuncTree {
+    fn get_type(&self) -> TreeType {
+        return TreeType::FuncTree;
     }
 
     fn as_any(&self) -> &dyn Any {

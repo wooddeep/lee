@@ -43,6 +43,10 @@ impl<'a> Executor<'a> {
                     // }
                     //
                     ()
+                },
+
+                Etree::FuncTree(ftree) => {
+
                 }
             }
         }
@@ -73,6 +77,9 @@ impl<'a> Executor<'a> {
                 // }
                 //
                 ()
+            },
+            Etree::FuncTree(ftree) => {
+
             }
         }
     }
