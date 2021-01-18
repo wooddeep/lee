@@ -48,15 +48,16 @@ impl<'a> Parser<'a> {
         let mut out: Vec<Etree> = Vec::new(); // 输出代码块列表
 
         let stmt = self.parse_statement().unwrap();
+
         match &stmt {
             Etree::Tree(tree) => {
                 if tree.token_type == TokenType::Func {
                     // TODO 记录函数表
-                } else {
-                    out.push(stmt);
                 }
             }
-            _ => {}
+            _ => {
+                out.push(stmt);
+            }
         }
 
         println!("{:?}", self.lexer.lookup(0).unwrap().token_type);
@@ -64,21 +65,23 @@ impl<'a> Parser<'a> {
         while self.lexer.lookup(0).unwrap().token_type == TokenType::Semicolon {
             self.lexer.pick();
             let stmt = self.parse_statement();
-            match stmt {
+
+            match &stmt {
                 None => break,
                 Some(etree) => {
                     match &etree {
                         Etree::Tree(tree) => {
                             if tree.token_type == TokenType::Func {
                                 // TODO 记录函数表
-                            } else {
-                                out.push(etree);
                             }
                         }
-                        _ => {}
+                        _ => {
+                            out.push(stmt.unwrap());
+                        }
                     }
                 }
             }
+
         }
 
         return out;
@@ -143,7 +146,8 @@ impl<'a> Parser<'a> {
     //  * plist: "" | NAME {, NAME}
     //  */
     fn parse_plist(&mut self) -> Option<Vec<Etree>> {
-        return None
+        let mut out: Vec<Etree> = Vec::new(); // 输出代码块列表
+        return Some(out);
     }
 
     // /*

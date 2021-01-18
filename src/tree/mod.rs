@@ -3,12 +3,85 @@ use std::borrow::Borrow;
 use crate::lexer::TokenType;
 use crate::parser::SemanticsType;
 use std::any::Any;
+use std::cmp::Ordering;
 // rust面向对象之继承: https://blog.csdn.net/u010766458/article/details/105403282/
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Value {
     Float(f32),
     Charset(String),
+}
+
+impl PartialOrd for Value {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        match self {
+            Value::Float(fs) => {
+                match other {
+                    Value::Float(fa) => {
+                        return fs.partial_cmp(fa);
+                    },
+                    _ => {panic!("compare tye error!")}
+                }
+            },
+            _ => {panic!("compare tye error!")}
+        }
+    }
+
+    fn lt(&self, other: &Self) -> bool {
+        match self {
+            Value::Float(fs) => {
+                match other {
+                    Value::Float(fa) => {
+                        return fs.lt(fa);
+                    },
+                    _ => {panic!("compare tye error!")}
+                }
+            },
+            _ => {panic!("compare tye error!")}
+        }
+    }
+
+    fn le(&self, other: &Self) -> bool {
+        match self {
+            Value::Float(fs) => {
+                match other {
+                    Value::Float(fa) => {
+                        return fs.le(fa);
+                    },
+                    _ => {panic!("compare tye error!")}
+                }
+            },
+            _ => {panic!("compare tye error!")}
+        }
+    }
+
+    fn gt(&self, other: &Self) -> bool {
+        match self {
+            Value::Float(fs) => {
+                match other {
+                    Value::Float(fa) => {
+                        return fs.gt(fa);
+                    },
+                    _ => {return false}
+                }
+            },
+            _ => {return false;}
+        }
+    }
+
+    fn ge(&self, other: &Self) -> bool {
+        match self {
+            Value::Float(fs) => {
+                match other {
+                    Value::Float(fa) => {
+                        return fs.ge(fa);
+                    },
+                    _ => {return false}
+                }
+            },
+            _ => {return false;}
+        }
+    }
 }
 
 #[derive(Clone)]
