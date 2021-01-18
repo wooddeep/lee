@@ -19,14 +19,14 @@ impl<'a> Executor<'a> {
 
     pub fn eval_program(&mut self) {
         let etl = self.parser.parse_program();
+        self.eval_etree_list(&etl);
+    }
 
-        println!("##statment len: {}", etl.len());
-
+    pub fn eval_etree_list(&mut self, etl: &Vec<Etree>) {
         for et in etl.iter() {
 
             match et {
                 Etree::Tree(tree) => {
-
                     match tree.token_type {
                         TokenType::MULTIP | TokenType::DIVIDER | TokenType::PLUS | TokenType::SUBSTRACT => {
                             let value = self.eval_num_calc(&tree);
@@ -37,10 +37,12 @@ impl<'a> Executor<'a> {
                 },
 
                 Etree::IfTree(itree) => {
-                    println!("## eval if tree!");
-
                     if self.eval_num_calc(&itree.condition.as_ref().unwrap()) > Value::Float(0f32) { // tree::Etree::Tree(condition.unwrap()
                         println!("## in if branch!");
+                        self.eval_etree_list(itree.if_branch.as_ref().unwrap());
+                    } else {
+                        println!("## in else branch!");
+                        self.eval_etree_list(itree.else_branch.as_ref().unwrap());
                     }
                 },
 
