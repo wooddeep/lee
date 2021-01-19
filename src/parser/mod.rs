@@ -50,11 +50,11 @@ impl<'a> Parser<'a> {
         let stmt = self.parse_statement().unwrap();
 
         match &stmt {
-            Etree::Tree(tree) => {
-                if tree.token_type == TokenType::Func {
-                    // TODO 记录函数表
-                }
-            }
+            //Etree::Tree(tree) => {},
+            //Etree::IfTree(itree) => {},
+            //Etree::FuncTree(ftree) => {},
+
+            // TODO IfTree & FuncTree
             _ => {
                 out.push(stmt);
             }
@@ -70,11 +70,9 @@ impl<'a> Parser<'a> {
                 None => break,
                 Some(etree) => {
                     match &etree {
-                        Etree::Tree(tree) => {
-                            if tree.token_type == TokenType::Func {
-                                // TODO 记录函数表
-                            }
-                        }
+                        //Etree::Tree(tree) => {},
+                        //Etree::IfTree(itree) => {},
+                        //Etree::FuncTree(ftree) => {},
                         _ => {
                             out.push(stmt.unwrap());
                         }
