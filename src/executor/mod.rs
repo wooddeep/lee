@@ -27,10 +27,10 @@ impl<'a> Executor<'a> {
 
             match et {
                 Etree::Tree(tree) => {
-                    match tree.token_type {
-                        TokenType::MULTIP | TokenType::DIVIDER | TokenType::PLUS | TokenType::SUBSTRACT => {
+                    match tree.semantics_type {
+                        SemanticsType::Calculate | SemanticsType::Compare | SemanticsType::Direct => {
                             let value = self.eval_num_calc(&tree);
-                            println!("## result = {:?}", value)
+                            println!("## result = {:?}", value);
                         },
                         _ => {}
                     }
@@ -55,40 +55,6 @@ impl<'a> Executor<'a> {
         }
     }
 
-    pub fn eval_stmt(&mut self) {
-        let et = self.parser.parse_statement().unwrap();
-
-        match et {
-            Etree::Tree(tree) => {
-                match tree.token_type {
-                    TokenType::MULTIP | TokenType::DIVIDER | TokenType::PLUS | TokenType::SUBSTRACT => {
-                        let value = self.eval_num_calc(&tree);
-                        println!("## result = {:?}", value)
-                    },
-                    _ => {}
-                }
-
-                ()
-            },
-            Etree::IfTree(tree) => {
-                // match tree.token_type {
-                //     TokenType::MULTIP | TokenType::DIVIDER | TokenType::PLUS | TokenType::SUBSTRACT => {
-                //         let value = self.eval_num_calc(&tree);
-                //         println!("## result = {:?}", value)
-                //     }
-                //     _ => {}
-                // }
-                //
-                ()
-            },
-            Etree::FuncTree(ftree) => {
-
-            },
-
-            _ => (),
-        }
-    }
-
     pub fn eval(&mut self) {
         let ot = self.parser.parse_expr();
 
@@ -108,10 +74,49 @@ impl<'a> Executor<'a> {
         }
     }
 
+    pub fn eval_compare(&mut self, tree: &Tree) -> Value {
+        let left_val = self.eval_num_calc(tree.left.as_ref().unwrap());
+        let right_val = self.eval_num_calc(tree.right.as_ref().unwrap());
+
+        match tree.token_type {
+            TokenType::EQ => {
+                return Value::Bool(left_val == right_val);
+            }
+
+            TokenType::UE => {
+                return Value::Bool(left_val != right_val);
+            }
+
+            TokenType::GT => {
+                return Value::Bool(left_val > right_val);
+            }
+
+            TokenType::GE => {
+                return Value::Bool(left_val >= right_val);
+            }
+
+            TokenType::LT => {
+                return Value::Bool(left_val < right_val);
+            }
+
+            TokenType::LE => {
+                return Value::Bool(left_val <= right_val);
+            }
+            _ => {}
+        }
+
+        return Value::Bool(true);
+    }
+
     pub fn eval_num_calc(&mut self, tree: &Tree) -> Value {
         match tree.semantics_type {
             SemanticsType::Direct => {
                 return tree.value.clone();
+            }
+
+            SemanticsType::Compare => {
+                println!("it compare type");
+                return self.eval_compare(tree);
             }
 
             _ => {

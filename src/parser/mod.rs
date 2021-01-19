@@ -40,7 +40,6 @@ impl<'a> Parser<'a> {
 
 
 impl<'a> Parser<'a> {
-
     // /*
     //  * program: statement { ";" statement }
     //  */
@@ -79,7 +78,6 @@ impl<'a> Parser<'a> {
                     }
                 }
             }
-
         }
 
         return out;
@@ -109,7 +107,6 @@ impl<'a> Parser<'a> {
             };
 
             return Some(Etree::FuncTree(func_tree));
-
         } else if token_type == TokenType::If {
             self.lexer.pick();
             let condition = self.parse_expr();
@@ -258,11 +255,36 @@ impl<'a> Parser<'a> {
         self.parse_mul_div(Some(left), token_type)
     }
 
-
+    // /*
+    // term: factor { ("*" | "/") factor }
+    //  | factor ">" factor
+    //  | factor ">=" factor
+    //  | factor "<" factor
+    //  | factor "<=" factor
+    //  | factor "==" factor
+    // */
     pub fn parse_term(&mut self) -> Option<Tree> {
         let left = self.parse_factor();
 
         let next = self.lexer.lookup(0);
+        let token_type = next.unwrap().token_type;
+        match token_type {
+            TokenType::GT | TokenType::GE | TokenType::EQ |
+            TokenType::LT | TokenType::LE | TokenType::EQ => {
+                self.lexer.pick();
+                let right = self.parse_factor();
+                let tree = Tree {
+                    value: Value::Float(0f32),
+                    token_type,
+                    semantics_type: SemanticsType::Compare,
+                    left: Some(Box::new(left.unwrap())),
+                    right: Some(Box::new(right.unwrap())),
+                };
+                return Some(tree);
+            }
+            _ => {}
+        }
+
         let token_type = &next.unwrap().token_type.clone();
 
         return self.parse_mul_div(left, token_type);

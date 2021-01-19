@@ -10,6 +10,7 @@ use std::cmp::Ordering;
 pub enum Value {
     Float(f32),
     Charset(String),
+    Bool(bool),
 }
 
 impl PartialOrd for Value {

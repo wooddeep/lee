@@ -49,7 +49,8 @@ pub enum TokenType {
     If,
     Else,
     While,
-    Func, // def
+    Func,
+    // def
     STRING,
     PLUS,
     // +
@@ -71,6 +72,8 @@ pub enum TokenType {
     // <=
     EQ,
     // ==
+    UE,
+    // !=
     AND,
     // &&
     OR,
@@ -246,6 +249,11 @@ impl Lexer {
 
                     "==" => {
                         let token = Token { literal: String::from(&c[j]), token_type: TokenType::EQ };
+                        self.token_list.push(token);
+                    }
+
+                    "!=" => {
+                        let token = Token { literal: String::from(&c[j]), token_type: TokenType::UE };
                         self.token_list.push(token);
                     }
 
