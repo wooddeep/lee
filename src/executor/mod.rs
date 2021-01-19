@@ -37,13 +37,40 @@ impl<'a> Executor<'a> {
                 },
 
                 Etree::IfTree(itree) => {
-                    if self.eval_num_calc(&itree.condition.as_ref().unwrap()) > Value::Float(0f32) { // tree::Etree::Tree(condition.unwrap()
-                        println!("## in if branch!");
-                        self.eval_etree_list(itree.if_branch.as_ref().unwrap());
-                    } else {
-                        println!("## in else branch!");
-                        self.eval_etree_list(itree.else_branch.as_ref().unwrap());
+
+                    let value = self.eval_num_calc(&itree.condition.as_ref().unwrap());
+
+                    match value {
+                        Value::Bool(bv) => {
+                          if bv {
+                              println!("## in if branch!");
+                              self.eval_etree_list(itree.if_branch.as_ref().unwrap());
+                          } else {
+                              println!("## in else branch!");
+                              self.eval_etree_list(itree.else_branch.as_ref().unwrap());
+                          }
+                        }
+
+                        Value::Float(fv) => {
+                            if fv > 0f32 {
+                                println!("## in if branch!");
+                                self.eval_etree_list(itree.if_branch.as_ref().unwrap());
+                            } else {
+                                println!("## in else branch!");
+                                self.eval_etree_list(itree.else_branch.as_ref().unwrap());
+                            }
+                        }
+
+                        _ => {}
                     }
+
+                    // if self.eval_num_calc(&itree.condition.as_ref().unwrap()) > Value::Float(0f32) { // tree::Etree::Tree(condition.unwrap()
+                    //     println!("## in if branch!");
+                    //     self.eval_etree_list(itree.if_branch.as_ref().unwrap());
+                    // } else {
+                    //     println!("## in else branch!");
+                    //     self.eval_etree_list(itree.else_branch.as_ref().unwrap());
+                    // }
                 },
 
                 Etree::FuncTree(ftree) => {
