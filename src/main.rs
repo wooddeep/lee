@@ -21,8 +21,8 @@ fn main() {
     //let mut lexer = Lexer{curr_index: 0, token_list: Vec::new(), formula: String::from("/* coment */hello#abc def\nabc \"123\" \n -90.123f123,;:+-=*/abcd &&& ||")};
     //let mut lexer = Lexer{curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from("((-1 * (2 - 3) * 4) * -1) * -2; 1 + 1")};
     //let mut lexer = Lexer{curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from(r#" 1 + "hello" + "  " + "word" + 2"#)};
-    let mut lexer = Lexer{curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from(r#"if 1 < 0 {1 + 1} else {2 + 2}"#)};
-    //let mut lexer = Lexer{curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from(r#"func foo() {1 + 1}"#)};
+    //let mut lexer = Lexer{curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from(r#"if 1 < 0 {1 + 1} else {2 + 2}"#)};
+    let mut lexer = Lexer{curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from(r#"func foo() {1 + 1}"#)};
     //let mut lexer = Lexer{curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from("1 < 2")};
 
     lexer.analyze();

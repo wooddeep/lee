@@ -2,6 +2,7 @@ use crate::parser::*;
 use crate::lexer::*;
 use crate::tree::*;
 use std::ops::Deref;
+use std::borrow::Borrow;
 
 
 pub struct Executor<'a> {
@@ -26,6 +27,13 @@ impl<'a> Executor<'a> {
         for et in etl.iter() {
 
             match et {
+
+                Etree::FuncTree(ftree) => {
+                    if ftree.semantics_type == SemanticsType::FuncDef {
+                        self.eval_etree_list(ftree.fbody.as_ref().unwrap());
+                    }
+                },
+
                 Etree::Tree(tree) => {
                     match tree.semantics_type {
                         SemanticsType::Calculate | SemanticsType::Compare | SemanticsType::Direct => {
@@ -63,18 +71,6 @@ impl<'a> Executor<'a> {
 
                         _ => {}
                     }
-
-                    // if self.eval_num_calc(&itree.condition.as_ref().unwrap()) > Value::Float(0f32) { // tree::Etree::Tree(condition.unwrap()
-                    //     println!("## in if branch!");
-                    //     self.eval_etree_list(itree.if_branch.as_ref().unwrap());
-                    // } else {
-                    //     println!("## in else branch!");
-                    //     self.eval_etree_list(itree.else_branch.as_ref().unwrap());
-                    // }
-                },
-
-                Etree::FuncTree(ftree) => {
-
                 },
 
                 _ => {}

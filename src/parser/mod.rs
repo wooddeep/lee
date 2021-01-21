@@ -4,9 +4,10 @@ use std::collections::HashMap;
 use std::cell::RefCell;
 use std::any::Any;
 use crate::tree;
+use std::sync::atomic::Ordering::SeqCst;
 
 #[allow(dead_code)]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)] // #[derive(Debug, Clone, PartialEq)]
 pub enum SemanticsType {
     Direct,
     // 立即数
@@ -16,6 +17,8 @@ pub enum SemanticsType {
     Compare,
     MapSet,
     Condition,
+    FuncDef,
+    FuncCall
 }
 
 #[allow(dead_code)]
@@ -101,6 +104,7 @@ impl<'a> Parser<'a> {
             self.lexer.pick(); // 去掉右括号
             let func_body = self.parse_block(); // 函数体
             let func_tree = FuncTree {
+                semantics_type: SemanticsType::FuncDef,
                 func_name,
                 plist: Some(Box::new(plist.unwrap())),
                 fbody: Some(Box::new(func_body.unwrap())),
