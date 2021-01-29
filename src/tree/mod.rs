@@ -105,7 +105,7 @@ pub struct IfTree {
 pub struct FuncTree {
     pub semantics_type: SemanticsType,
     pub func_name: String,
-    pub plist: Option<Box<Vec<Etree>>>,
+    pub plist: Option<Box<Vec<String>>>,
     pub fbody: Option<Box<Vec<Etree>>>,
 }
 

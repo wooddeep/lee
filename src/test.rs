@@ -233,10 +233,32 @@ mod tests {
         //call_ref(input);
     }
 
-    #[test]
+    //#[test]
     fn test_option() {  // cargo test -- --nocapture
-        let data = Bar{foo:Some(Foo{age: 38, name:String::from("lee"), next: None})};
-        call_ref(data.foo.unwrap().borrow());
+        let data = &Bar{foo:Some(Foo{age: 38, name:String::from("lee"), next: None})};
+        call_ref(data.foo.as_ref().unwrap().borrow());
+    }
+
+    #[derive(Debug)]
+    struct Point {
+        x: f64,
+        y: f64,
+    }
+    fn negate(p: Point) -> Point {
+        Point {
+            x: -p.x,
+            y: -p.y,
+        }
+    }
+    #[test]
+    fn xx_test() {
+        let mut p = Point { x: 1.0, y: 3.0 };
+        //p.x = 2f64;
+        let p_ref = &p;
+        //print!("{:?}", *p_ref);
+        //negate(*p_ref);
+        // error: cannot move out of `*p_ref` which is behind a shared reference
+        let b = p;
     }
 
 }

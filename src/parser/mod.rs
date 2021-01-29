@@ -18,7 +18,7 @@ pub enum SemanticsType {
     MapSet,
     Condition,
     FuncDef,
-    FuncCall
+    FuncCall,
 }
 
 #[allow(dead_code)]
@@ -48,33 +48,27 @@ impl<'a> Parser<'a> {
     //  */
     pub fn parse_program(&mut self) -> Vec<Etree> {
         let mut out: Vec<Etree> = Vec::new(); // 输出代码块列表
-
         let stmt = self.parse_statement().unwrap();
-
         match &stmt {
-            //Etree::Tree(tree) => {},
-            //Etree::IfTree(itree) => {},
-            //Etree::FuncTree(ftree) => {},
-
-            // TODO IfTree & FuncTree
+            Etree::FuncTree(ftree) => {
+                self.func_map.insert(ftree.func_name.clone(), stmt);
+            }
             _ => {
                 out.push(stmt);
             }
         }
-
         println!("{:?}", self.lexer.lookup(0).unwrap().token_type);
 
         while self.lexer.lookup(0).unwrap().token_type == TokenType::Semicolon {
             self.lexer.pick();
             let stmt = self.parse_statement();
-
             match &stmt {
                 None => break,
                 Some(etree) => {
                     match &etree {
-                        //Etree::Tree(tree) => {},
-                        //Etree::IfTree(itree) => {},
-                        //Etree::FuncTree(ftree) => {},
+                        Etree::FuncTree(ftree) => {
+                            self.func_map.insert(ftree.func_name.clone(), stmt.unwrap());
+                        }
                         _ => {
                             out.push(stmt.unwrap());
                         }
@@ -144,8 +138,17 @@ impl<'a> Parser<'a> {
     // /*
     //  * plist: "" | NAME {, NAME}
     //  */
-    fn parse_plist(&mut self) -> Option<Vec<Etree>> {
-        let mut out: Vec<Etree> = Vec::new(); // 输出代码块列表
+    fn parse_plist(&mut self) -> Option<Vec<String>> {
+        let mut out: Vec<String> = Vec::new(); // 输出代码块列表
+        if self.lexer.lookup(0).unwrap().token_type != TokenType::RightCurve {
+            let para = self.lexer.pick();
+            out.push(para.unwrap().literal.clone()); // 存储形参的 字符串 字面量
+            while self.lexer.lookup(0).unwrap().token_type == TokenType::Comma {
+                self.lexer.pick();
+                let para = self.lexer.pick();
+                out.push(para.unwrap().literal.clone());
+            }
+        }
         return Some(out);
     }
 
