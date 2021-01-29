@@ -3,6 +3,7 @@ use crate::lexer::*;
 use crate::tree::*;
 use std::ops::Deref;
 use std::borrow::Borrow;
+use std::collections::HashMap;
 
 
 pub struct Executor<'a> {
@@ -20,61 +21,69 @@ impl<'a> Executor<'a> {
 
     pub fn eval_program(&mut self) {
         let etl = self.parser.parse_program();
-        self.eval_etree_list(&etl);
+        self.eval_etree_list(&etl.0);
+        self.eval_func_map(&etl.1);
+    }
+
+    pub fn eval_etree(&mut self, et: &Etree) {
+        match et {
+            Etree::FuncTree(ftree) => {
+                if ftree.semantics_type == SemanticsType::FuncDef {
+                    self.eval_etree_list(ftree.fbody.as_ref().unwrap());
+                }
+            }
+
+            Etree::Tree(tree) => {
+                match tree.semantics_type {
+                    SemanticsType::Calculate | SemanticsType::Compare | SemanticsType::Direct => {
+                        let value = self.eval_num_calc(&tree);
+                        println!("## result = {:?}", value);
+                    }
+                    _ => {}
+                }
+            }
+
+            Etree::IfTree(itree) => {
+                let value = self.eval_num_calc(&itree.condition.as_ref().unwrap());
+
+                match value {
+                    Value::Bool(bv) => {
+                        if bv {
+                            println!("## in if branch!");
+                            self.eval_etree_list(itree.if_branch.as_ref().unwrap());
+                        } else {
+                            println!("## in else branch!");
+                            self.eval_etree_list(itree.else_branch.as_ref().unwrap());
+                        }
+                    }
+
+                    Value::Float(fv) => {
+                        if fv > 0f32 {
+                            println!("## in if branch!");
+                            self.eval_etree_list(itree.if_branch.as_ref().unwrap());
+                        } else {
+                            println!("## in else branch!");
+                            self.eval_etree_list(itree.else_branch.as_ref().unwrap());
+                        }
+                    }
+
+                    _ => {}
+                }
+            }
+
+            _ => {}
+        }
     }
 
     pub fn eval_etree_list(&mut self, etl: &Vec<Etree>) {
         for et in etl.iter() {
+            self.eval_etree(et);
+        }
+    }
 
-            match et {
-
-                Etree::FuncTree(ftree) => {
-                    if ftree.semantics_type == SemanticsType::FuncDef {
-                        self.eval_etree_list(ftree.fbody.as_ref().unwrap());
-                    }
-                },
-
-                Etree::Tree(tree) => {
-                    match tree.semantics_type {
-                        SemanticsType::Calculate | SemanticsType::Compare | SemanticsType::Direct => {
-                            let value = self.eval_num_calc(&tree);
-                            println!("## result = {:?}", value);
-                        },
-                        _ => {}
-                    }
-                },
-
-                Etree::IfTree(itree) => {
-
-                    let value = self.eval_num_calc(&itree.condition.as_ref().unwrap());
-
-                    match value {
-                        Value::Bool(bv) => {
-                          if bv {
-                              println!("## in if branch!");
-                              self.eval_etree_list(itree.if_branch.as_ref().unwrap());
-                          } else {
-                              println!("## in else branch!");
-                              self.eval_etree_list(itree.else_branch.as_ref().unwrap());
-                          }
-                        }
-
-                        Value::Float(fv) => {
-                            if fv > 0f32 {
-                                println!("## in if branch!");
-                                self.eval_etree_list(itree.if_branch.as_ref().unwrap());
-                            } else {
-                                println!("## in else branch!");
-                                self.eval_etree_list(itree.else_branch.as_ref().unwrap());
-                            }
-                        }
-
-                        _ => {}
-                    }
-                },
-
-                _ => {}
-            }
+    pub fn eval_func_map(&mut self, fmap: &HashMap<String, Etree>) {
+        for (_, tree) in fmap {
+           self.eval_etree(tree);
         }
     }
 

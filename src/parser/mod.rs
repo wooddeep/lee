@@ -24,12 +24,12 @@ pub enum SemanticsType {
 #[allow(dead_code)]
 pub struct Parser<'a> {
     pub lexer: &'a mut Lexer,
-    pub func_map: HashMap<String, Etree>,
+    //pub func_map: HashMap<String, Etree>,
 }
 
 impl<'a> Parser<'a> {
-    pub fn new(lexer: &'a mut Lexer, func_map: HashMap<String, Etree>) -> Self {
-        Parser { lexer, func_map }
+    pub fn new(lexer: &'a mut Lexer) -> Self {
+        Parser {lexer}
     }
 }
 
@@ -46,12 +46,13 @@ impl<'a> Parser<'a> {
     // /*
     //  * program: statement { ";" statement }
     //  */
-    pub fn parse_program(&mut self) -> Vec<Etree> {
+    pub fn parse_program(&mut self) -> (Vec<Etree>, HashMap<String, Etree>) {
+        let mut func_map: HashMap<String, Etree> = HashMap::new();
         let mut out: Vec<Etree> = Vec::new(); // 输出代码块列表
         let stmt = self.parse_statement().unwrap();
         match &stmt {
             Etree::FuncTree(ftree) => {
-                self.func_map.insert(ftree.func_name.clone(), stmt);
+                func_map.insert(ftree.func_name.clone(), stmt);
             }
             _ => {
                 out.push(stmt);
@@ -67,7 +68,7 @@ impl<'a> Parser<'a> {
                 Some(etree) => {
                     match &etree {
                         Etree::FuncTree(ftree) => {
-                            self.func_map.insert(ftree.func_name.clone(), stmt.unwrap());
+                            func_map.insert(ftree.func_name.clone(), stmt.unwrap());
                         }
                         _ => {
                             out.push(stmt.unwrap());
@@ -77,7 +78,7 @@ impl<'a> Parser<'a> {
             }
         }
 
-        return out;
+        return (out, func_map);
     }
 
 

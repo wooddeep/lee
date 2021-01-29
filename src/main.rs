@@ -31,7 +31,7 @@ fn main() {
         println!("{}", element.literal)
     }
 
-    let mut parser = Parser{lexer: &mut lexer, func_map: HashMap::new()};
+    let mut parser = Parser{lexer: &mut lexer};
 
     let mut executor = Executor::new(&mut parser);
 
