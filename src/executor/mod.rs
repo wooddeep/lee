@@ -44,7 +44,7 @@ impl<'a> Executor<'a> {
             }
 
             Etree::IfTree(itree) => {
-                let value = self.eval_num_calc(&itree.condition.as_ref().unwrap());
+                let value = self.eval_num_calc(&itree.condition.as_ref().unwrap().tree().unwrap());
 
                 match value {
                     Value::Bool(bv) => {
@@ -93,9 +93,9 @@ impl<'a> Executor<'a> {
         match ot {
             None => {}
             Some(tree) => {
-                match tree.token_type {
+                match tree.tree().unwrap().token_type {
                     TokenType::MULTIP | TokenType::DIVIDER | TokenType::PLUS | TokenType::SUBSTRACT => {
-                        let value = self.eval_num_calc(&tree);
+                        let value = self.eval_num_calc(&tree.tree().unwrap());
                         println!("## result = {:?}", value)
                     }
                     _ => {}
@@ -107,8 +107,8 @@ impl<'a> Executor<'a> {
     }
 
     pub fn eval_compare(&mut self, tree: &Tree) -> Value {
-        let left_val = self.eval_num_calc(tree.left.as_ref().unwrap());
-        let right_val = self.eval_num_calc(tree.right.as_ref().unwrap());
+        let left_val = self.eval_num_calc(tree.left.as_ref().unwrap().tree().unwrap());
+        let right_val = self.eval_num_calc(tree.right.as_ref().unwrap().tree().unwrap());
 
         match tree.token_type {
             TokenType::EQ => {
@@ -152,8 +152,8 @@ impl<'a> Executor<'a> {
             }
 
             _ => {
-                let left_val = self.eval_num_calc(&tree.left.as_ref().unwrap());
-                let right_val = self.eval_num_calc(&tree.right.as_ref().unwrap());
+                let left_val = self.eval_num_calc(&tree.left.as_ref().unwrap().tree().unwrap());
+                let right_val = self.eval_num_calc(&tree.right.as_ref().unwrap().tree().unwrap());
                 match tree.token_type {
                     TokenType::MULTIP => {
                         let lv = match left_val {

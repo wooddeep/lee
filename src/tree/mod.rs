@@ -20,11 +20,11 @@ impl PartialOrd for Value {
                 match other {
                     Value::Float(fa) => {
                         return fs.partial_cmp(fa);
-                    },
-                    _ => {panic!("compare tye error!")}
+                    }
+                    _ => { panic!("compare tye error!") }
                 }
-            },
-            _ => {panic!("compare tye error!")}
+            }
+            _ => { panic!("compare tye error!") }
         }
     }
 
@@ -34,11 +34,11 @@ impl PartialOrd for Value {
                 match other {
                     Value::Float(fa) => {
                         return fs.lt(fa);
-                    },
-                    _ => {panic!("compare tye error!")}
+                    }
+                    _ => { panic!("compare tye error!") }
                 }
-            },
-            _ => {panic!("compare tye error!")}
+            }
+            _ => { panic!("compare tye error!") }
         }
     }
 
@@ -48,11 +48,11 @@ impl PartialOrd for Value {
                 match other {
                     Value::Float(fa) => {
                         return fs.le(fa);
-                    },
-                    _ => {panic!("compare tye error!")}
+                    }
+                    _ => { panic!("compare tye error!") }
                 }
-            },
-            _ => {panic!("compare tye error!")}
+            }
+            _ => { panic!("compare tye error!") }
         }
     }
 
@@ -62,11 +62,11 @@ impl PartialOrd for Value {
                 match other {
                     Value::Float(fa) => {
                         return fs.gt(fa);
-                    },
-                    _ => {return false}
+                    }
+                    _ => { return false; }
                 }
-            },
-            _ => {return false;}
+            }
+            _ => { return false; }
         }
     }
 
@@ -76,11 +76,11 @@ impl PartialOrd for Value {
                 match other {
                     Value::Float(fa) => {
                         return fs.ge(fa);
-                    },
-                    _ => {return false}
+                    }
+                    _ => { return false; }
                 }
-            },
-            _ => {return false;}
+            }
+            _ => { return false; }
         }
     }
 }
@@ -90,13 +90,13 @@ pub struct Tree {
     pub value: Value,
     pub token_type: TokenType,
     pub semantics_type: SemanticsType,
-    pub left: Option<Box<Tree>>,
-    pub right: Option<Box<Tree>>,
+    pub left: Option<Box<Etree>>,
+    pub right: Option<Box<Etree>>,
 }
 
 #[derive(Clone)]
 pub struct IfTree {
-    pub condition: Option<Box<Tree>>,
+    pub condition: Option<Box<Etree>>,
     pub if_branch: Option<Box<Vec<Etree>>>,
     pub else_branch: Option<Box<Vec<Etree>>>,
 }
@@ -115,11 +115,36 @@ pub enum TreeType {
     FuncTree,
 }
 
+// https://stackoverflow.com/questions/34953711/unwrap-inner-type-when-enum-variant-is-known
+
 #[derive(Clone)]
 pub enum Etree {
     Tree(Tree),
     IfTree(IfTree),
     FuncTree(FuncTree),
+}
+
+impl Etree {
+    pub fn tree(&self) -> Option<&Tree> {
+        match self {
+            Etree::Tree(t) => Some(t),
+            _ => None,
+        }
+    }
+
+    pub fn if_tree(&self) -> Option<&IfTree> {
+        match self {
+            Etree::IfTree(it) => Some(it),
+            _ => None,
+        }
+    }
+
+    pub fn func_tree(&self) -> Option<&FuncTree> {
+        match self {
+            Etree::FuncTree(ft) => Some(ft),
+            _ => None,
+        }
+    }
 }
 
 pub trait TreeAct {

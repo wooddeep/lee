@@ -129,12 +129,11 @@ impl<'a> Parser<'a> {
         } else {
             let expr = self.parse_expr();
             match &expr {
-                Some(tree) => return Some(Etree::Tree(expr.unwrap())),
+                Some(tree) => return Some(expr.unwrap()),
                 _ => return None
             }
             //return Some(Etree::Tree(expr.unwrap()));
         }
-        return None;
     }
 
     // /*
@@ -190,7 +189,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_add_sub(&mut self, left: Option<Tree>, token_type: &TokenType) -> Option<Tree> {
+    fn parse_add_sub(&mut self, left: Option<Etree>, token_type: &TokenType) -> Option<Etree> {
         if !self.match_add_sub(token_type) { return left; }
 
         let token = self.lexer.pick();
@@ -215,10 +214,10 @@ impl<'a> Parser<'a> {
         let next = self.lexer.lookup(0);
         let token_type = &next.unwrap().token_type.clone();
 
-        self.parse_add_sub(Some(left), token_type)
+        self.parse_add_sub(Some(Etree::Tree(left)), token_type)
     }
 
-    pub fn parse_expr(&mut self) -> Option<Tree> {
+    pub fn parse_expr(&mut self) -> Option<Etree> {
         let left = self.parse_term();
 
         let next = self.lexer.lookup(0);
@@ -236,7 +235,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_mul_div(&mut self, left: Option<Tree>, token_type: &TokenType) -> Option<Tree> {
+    fn parse_mul_div(&mut self, left: Option<Etree>, token_type: &TokenType) -> Option<Etree> {
         if !self.match_mul_div(token_type) { return left; }
 
         let token = self.lexer.pick();
@@ -261,7 +260,7 @@ impl<'a> Parser<'a> {
         let next = self.lexer.lookup(0);
         let token_type = &next.unwrap().token_type.clone();
 
-        self.parse_mul_div(Some(left), token_type)
+        self.parse_mul_div(Some(Etree::Tree(left)), token_type)
     }
 
     // /*
@@ -272,7 +271,7 @@ impl<'a> Parser<'a> {
     //  | factor "<=" factor
     //  | factor "==" factor
     // */
-    pub fn parse_term(&mut self) -> Option<Tree> {
+    pub fn parse_term(&mut self) -> Option<Etree> {
         let left = self.parse_factor();
 
         let next = self.lexer.lookup(0);
@@ -289,7 +288,7 @@ impl<'a> Parser<'a> {
                     left: Some(Box::new(left.unwrap())),
                     right: Some(Box::new(right.unwrap())),
                 };
-                return Some(tree);
+                return Some(Etree::Tree(tree));
             }
             _ => {}
         }
@@ -307,12 +306,12 @@ impl<'a> Parser<'a> {
 
         if self.lexer.lookup(0).unwrap().token_type != TokenType::RightCurve {
             let para = self.parse_expr();
-            out.push(Etree::Tree(para.unwrap()));
+            out.push(para.unwrap());
 
             while self.lexer.lookup(0).unwrap().token_type != TokenType::Comma {
                 self.lexer.pick();
                 let para = self.parse_expr();
-                out.push(Etree::Tree(para.unwrap()));
+                out.push(para.unwrap());
             }
         }
 
@@ -322,14 +321,14 @@ impl<'a> Parser<'a> {
 
     // factor: NUMBER
     // | "(" expr ")"
-    // | NAME
+    // | NAME  // 变量
     // | NMAE "[" STRING "]"  // 字典取数
     // | FUNCNAME "(" alist ")"
     // | STRING
     // | "{" {STRING ":" expr ","} STRING ":" expr "}"    // 字典
 
     #[allow(dead_code)]
-    pub fn parse_factor(&mut self) -> Option<Tree> {
+    pub fn parse_factor(&mut self) -> Option<Etree> {
         let token = self.lexer.lookup(0);
         let token_literal = &token.unwrap().literal.clone();
         let token_type = &token.unwrap().token_type;
@@ -348,7 +347,7 @@ impl<'a> Parser<'a> {
                     right: None,
                 };
 
-                Some(tree)
+                Some(Etree::Tree(tree))
             }
 
             TokenType::STRING => {
@@ -365,7 +364,7 @@ impl<'a> Parser<'a> {
                     right: None,
                 };
 
-                Some(tree)
+                Some(Etree::Tree(tree))
             }
 
             TokenType::LeftCurve => {
@@ -388,7 +387,7 @@ impl<'a> Parser<'a> {
                         left: None,
                         right: None,
                     };
-                    Some(tree)
+                    Some(Etree::Tree(tree))
                 } else { // 变量
                     let tree = Tree {
                         value: Value::Charset(String::from(token_literal)),
@@ -397,7 +396,7 @@ impl<'a> Parser<'a> {
                         left: None,
                         right: None,
                     };
-                    Some(tree)
+                    Some(Etree::Tree(tree))
                 }
             }
 
