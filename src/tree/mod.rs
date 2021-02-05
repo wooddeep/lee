@@ -109,10 +109,18 @@ pub struct FuncTree {
     pub fbody: Option<Box<Vec<Etree>>>,
 }
 
+#[derive(Clone)]
+pub struct FuncCallTree {
+    pub semantics_type: SemanticsType,
+    pub func_name: String,
+    pub alist: Option<Box<Vec<Etree>>>,
+}
+
 pub enum TreeType {
     BaseTree,
     IfTree,
     FuncTree,
+    FuncCallTree,
 }
 
 // https://stackoverflow.com/questions/34953711/unwrap-inner-type-when-enum-variant-is-known
@@ -122,6 +130,7 @@ pub enum Etree {
     Tree(Tree),
     IfTree(IfTree),
     FuncTree(FuncTree),
+    FuncCallTree(FuncCallTree),
 }
 
 impl Etree {

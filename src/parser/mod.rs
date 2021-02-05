@@ -380,14 +380,13 @@ impl<'a> Parser<'a> {
                     self.lexer.pick(); // 去掉左括号
                     let alist = self.parse_alist();
                     self.lexer.pick(); // 去掉右括号
-                    let tree = Tree {
-                        value: Value::Charset(String::from(func_name)),
-                        token_type: TokenType::Identifier,
+                    let tree = FuncCallTree {
                         semantics_type: SemanticsType::FuncCall,
-                        left: None,
-                        right: None,
+                        func_name,
+                        alist: Some(Box::new(alist.unwrap())),
                     };
-                    Some(Etree::Tree(tree))
+                    Some(Etree::FuncCallTree(tree))
+
                 } else { // 变量
                     let tree = Tree {
                         value: Value::Charset(String::from(token_literal)),
