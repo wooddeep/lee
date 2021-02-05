@@ -377,12 +377,12 @@ impl<'a> Parser<'a> {
 
             TokenType::Identifier => { // 普通标识符: 变量, 函数参数, 函数调用
                 if self.lexer.lookups(2).unwrap().token_type == TokenType::LeftCurve { // 函数调用
-                    let func_name = self.lexer.pick();
+                    let func_name = self.lexer.pick().unwrap().literal.clone();
                     self.lexer.pick(); // 去掉左括号
                     let alist = self.parse_alist();
                     self.lexer.pick(); // 去掉右括号
                     let tree = Tree {
-                        value: Value::Charset(String::from(func_name.unwrap().literal.clone())),
+                        value: Value::Charset(String::from(func_name)),
                         token_type: TokenType::Identifier,
                         semantics_type: SemanticsType::FuncCall,
                         left: None,
