@@ -59,7 +59,7 @@ impl<'a> Parser<'a> {
                 out.push(stmt);
             }
         }
-        println!("{:?}", self.lexer.lookup(0).unwrap().token_type);
+        //println!("{:?}", self.lexer.lookup(0).unwrap().token_type);
 
         while self.lexer.lookup(0).unwrap().token_type == TokenType::Semicolon {
             self.lexer.pick();
@@ -195,7 +195,7 @@ impl<'a> Parser<'a> {
         let token = self.lexer.pick();
         match token {
             None => { return left; } // 返回 乘除法的逻辑
-            _ => { println!("##: {}", token.unwrap().literal) }
+            _ => { println!("## parse_add_sub: {}", token.unwrap().literal) }
         }
 
         let right = self.parse_term();
@@ -241,7 +241,7 @@ impl<'a> Parser<'a> {
         let token = self.lexer.pick();
         match token {
             None => { return left; } // 返回 乘除法的逻辑
-            _ => { println!("##: {}", token.unwrap().literal) }
+            _ => { println!("## parse_mul_div: {}", token.unwrap().literal) }
         }
 
         let right = self.parse_factor();
@@ -336,7 +336,7 @@ impl<'a> Parser<'a> {
         return match token_type {
             TokenType::Number => {
                 let val = token.unwrap().literal.parse::<f32>().unwrap();
-                println!("value = {}", val);
+                println!("## parse_factor:number = {}", val);
                 self.lexer.pick(); // 取数
 
                 let tree = Tree {
@@ -353,7 +353,7 @@ impl<'a> Parser<'a> {
             TokenType::STRING => {
                 let usize = token.unwrap().literal.as_str().len();
                 let val = token.unwrap().literal.as_str()[1..usize - 1].to_string();
-                println!("value = {}", val);
+                println!("## parse_factor: string = {}", val);
                 self.lexer.pick(); // 取数
 
                 let tree = Tree {
@@ -375,6 +375,7 @@ impl<'a> Parser<'a> {
             }
 
             TokenType::Identifier => { // 普通标识符: 变量, 函数参数, 函数调用
+
                 if self.lexer.lookups(2).unwrap().token_type == TokenType::LeftCurve { // 函数调用
                     let func_name = self.lexer.pick().unwrap().literal.clone();
                     self.lexer.pick(); // 去掉左括号
@@ -386,8 +387,9 @@ impl<'a> Parser<'a> {
                         alist: Some(Box::new(alist.unwrap())),
                     };
                     Some(Etree::FuncCallTree(tree))
-
-                } else { // 变量
+                } else {
+                    println!("## parse_factor:variable = {}", token_literal); // 变量
+                    self.lexer.pick(); // 取数
                     let tree = Tree {
                         value: Value::Charset(String::from(token_literal)),
                         token_type: TokenType::Identifier,

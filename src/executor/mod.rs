@@ -27,10 +27,12 @@ impl<'a> Executor<'a> {
 
     pub fn eval_etree(&mut self, et: &Etree) {
         match et {
-            Etree::FuncTree(ftree) => {
-                if ftree.semantics_type == SemanticsType::FuncDef {
-                    self.eval_etree_list(ftree.fbody.as_ref().unwrap());
-                }
+
+            Etree::FuncCallTree(fctree) => {
+                // if ftree.semantics_type == SemanticsType::FuncDef {
+                //     self.eval_etree_list(ftree.fbody.as_ref().unwrap());
+                // }
+                println!("## function name: {}", fctree.func_name);
             }
 
             Etree::Tree(tree) => {
