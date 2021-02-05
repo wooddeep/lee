@@ -308,7 +308,7 @@ impl<'a> Parser<'a> {
             let para = self.parse_expr();
             out.push(para.unwrap());
 
-            while self.lexer.lookup(0).unwrap().token_type != TokenType::Comma {
+            while self.lexer.lookup(0).unwrap().token_type == TokenType::Comma {
                 self.lexer.pick();
                 let para = self.parse_expr();
                 out.push(para.unwrap());
@@ -336,7 +336,7 @@ impl<'a> Parser<'a> {
         return match token_type {
             TokenType::Number => {
                 let val = token.unwrap().literal.parse::<f32>().unwrap();
-                println!("## parse_factor:number = {}", val);
+                println!("## parse_factor[0]:number = {}", val);
                 self.lexer.pick(); // 取数
 
                 let tree = Tree {
@@ -353,7 +353,7 @@ impl<'a> Parser<'a> {
             TokenType::STRING => {
                 let usize = token.unwrap().literal.as_str().len();
                 let val = token.unwrap().literal.as_str()[1..usize - 1].to_string();
-                println!("## parse_factor: string = {}", val);
+                println!("## parse_factor[1]: string = {}", val);
                 self.lexer.pick(); // 取数
 
                 let tree = Tree {
@@ -378,6 +378,8 @@ impl<'a> Parser<'a> {
 
                 if self.lexer.lookups(2).unwrap().token_type == TokenType::LeftCurve { // 函数调用
                     let func_name = self.lexer.pick().unwrap().literal.clone();
+                    println!("## called function name:{}", func_name);
+
                     self.lexer.pick(); // 去掉左括号
                     let alist = self.parse_alist();
                     self.lexer.pick(); // 去掉右括号
@@ -388,7 +390,7 @@ impl<'a> Parser<'a> {
                     };
                     Some(Etree::FuncCallTree(tree))
                 } else {
-                    println!("## parse_factor:variable = {}", token_literal); // 变量
+                    println!("## parse_factor[2]:variable = {}", token_literal); // 变量
                     self.lexer.pick(); // 取数
                     let tree = Tree {
                         value: Value::Charset(String::from(token_literal)),
