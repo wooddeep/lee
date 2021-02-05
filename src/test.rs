@@ -225,7 +225,6 @@ mod tests {
         // let rs = &mut s;
         // let mut rs = &mut String::from("raw string1!");
         // rs.push_str("abc");
-
     }
 
     fn call_ref(input: &Foo) {
@@ -235,7 +234,7 @@ mod tests {
 
     //#[test]
     fn test_option() {  // cargo test -- --nocapture
-        let data = &Bar{foo:Some(Foo{age: 38, name:String::from("lee"), next: None})};
+        let data = &Bar { foo: Some(Foo { age: 38, name: String::from("lee"), next: None }) };
         call_ref(data.foo.as_ref().unwrap().borrow());
     }
 
@@ -243,16 +242,41 @@ mod tests {
     struct Point {
         x: f64,
         y: f64,
+        z: String,
     }
+
+    impl Point {
+        fn bar(&mut self, msg: &String) {
+            println!("{:?}", self)
+        }
+
+        fn foo(&mut self) {
+            println!("{:?}", self.z)
+        }
+    }
+
+    #[test]
+    fn yy_test() {
+        let mut p = Point { x: 1.0, y: 3.0, z: String::from("a") };
+        let mut pp = &mut p;
+
+        //pp.bar(& pp.z);
+
+        pp.foo();
+        pp.foo();
+    }
+
     fn negate(p: Point) -> Point {
         Point {
             x: -p.x,
             y: -p.y,
+            z: String::from("lee"),
         }
     }
-    #[test]
+
+    //#[test]
     fn xx_test() {
-        let mut p = Point { x: 1.0, y: 3.0 };
+        let mut p = Point { x: 1.0, y: 3.0, z: String::from("a") };
         //p.x = 2f64;
         let p_ref = &p;
         //print!("{:?}", *p_ref);
@@ -260,6 +284,5 @@ mod tests {
         // error: cannot move out of `*p_ref` which is behind a shared reference
         let b = p;
     }
-
 }
 

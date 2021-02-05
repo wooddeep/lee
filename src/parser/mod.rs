@@ -19,6 +19,7 @@ pub enum SemanticsType {
     Condition,
     FuncDef,
     FuncCall,
+    Variable,
 }
 
 #[allow(dead_code)]
@@ -29,7 +30,7 @@ pub struct Parser<'a> {
 
 impl<'a> Parser<'a> {
     pub fn new(lexer: &'a mut Lexer) -> Self {
-        Parser {lexer}
+        Parser { lexer }
     }
 }
 
@@ -298,6 +299,26 @@ impl<'a> Parser<'a> {
         return self.parse_mul_div(left, token_type);
     }
 
+    // /*
+    //  * alist: "" | expr {, expr} // 实参列表
+    //  */
+    pub fn parse_alist(&mut self) -> Option<Vec<Etree>> {
+        let mut out: Vec<Etree> = Vec::new();
+
+        if self.lexer.lookup(0).unwrap().token_type != TokenType::RightCurve {
+            let para = self.parse_expr();
+            out.push(Etree::Tree(para.unwrap()));
+
+            while self.lexer.lookup(0).unwrap().token_type != TokenType::Comma {
+                self.lexer.pick();
+                let para = self.parse_expr();
+                out.push(Etree::Tree(para.unwrap()));
+            }
+        }
+
+        return Some(out);
+    }
+
 
     // factor: NUMBER
     // | "(" expr ")"
@@ -310,7 +331,7 @@ impl<'a> Parser<'a> {
     #[allow(dead_code)]
     pub fn parse_factor(&mut self) -> Option<Tree> {
         let token = self.lexer.lookup(0);
-
+        let token_literal = &token.unwrap().literal.clone();
         let token_type = &token.unwrap().token_type;
 
         return match token_type {
@@ -352,6 +373,32 @@ impl<'a> Parser<'a> {
                 let expr = self.parse_expr();
                 self.lexer.pick(); // 去掉右括号
                 expr
+            }
+
+            TokenType::Identifier => { // 普通标识符: 变量, 函数参数, 函数调用
+                if self.lexer.lookups(2).unwrap().token_type == TokenType::LeftCurve { // 函数调用
+                    let func_name = self.lexer.pick();
+                    self.lexer.pick(); // 去掉左括号
+                    let alist = self.parse_alist();
+                    self.lexer.pick(); // 去掉右括号
+                    let tree = Tree {
+                        value: Value::Charset(String::from(func_name.unwrap().literal.clone())),
+                        token_type: TokenType::Identifier,
+                        semantics_type: SemanticsType::FuncCall,
+                        left: None,
+                        right: None,
+                    };
+                    Some(tree)
+                } else { // 变量
+                    let tree = Tree {
+                        value: Value::Charset(String::from(token_literal)),
+                        token_type: TokenType::Identifier,
+                        semantics_type: SemanticsType::Variable,
+                        left: None,
+                        right: None,
+                    };
+                    Some(tree)
+                }
             }
 
             _ => {

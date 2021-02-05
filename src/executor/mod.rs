@@ -22,7 +22,7 @@ impl<'a> Executor<'a> {
     pub fn eval_program(&mut self) {
         let etl = self.parser.parse_program();
         self.eval_etree_list(&etl.0);
-        self.eval_func_map(&etl.1);
+        //self.eval_func_map(&etl.1);
     }
 
     pub fn eval_etree(&mut self, et: &Etree) {
