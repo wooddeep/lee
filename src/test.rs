@@ -284,5 +284,19 @@ mod tests {
         // error: cannot move out of `*p_ref` which is behind a shared reference
         let b = p;
     }
+
+    #[test]
+    fn rc_test() {
+        //let mut v: Rc<RefCell<_>> = Rc::new(RefCell::new(1));
+        //v.borrow_mut().replace(2);
+        //println!("v: {}", v.into_inner());
+
+        //let v: Rc<_> = Rc::new(1);   // rc 用户共享，记住链表的例子
+        //println!("v: {}", v.clone());
+
+        let v = RefCell::new(1);
+        println!("v: {}", v.into_inner());
+
+    }
 }
 

@@ -139,15 +139,31 @@ impl<'a> Parser<'a> {
     // /*
     //  * plist: "" | NAME {, NAME}
     //  */
-    fn parse_plist(&mut self) -> Option<Vec<String>> {
-        let mut out: Vec<String> = Vec::new(); // 输出代码块列表
+    // fn parse_plist(&mut self) -> Option<Vec<String>> {
+    //     let mut out: Vec<String> = Vec::new(); // 输出代码块列表
+    //     if self.lexer.lookup(0).unwrap().token_type != TokenType::RightCurve {
+    //         let para = self.lexer.pick();
+    //         out.push(para.unwrap().literal.clone()); // 存储形参的 字符串 字面量
+    //         while self.lexer.lookup(0).unwrap().token_type == TokenType::Comma {
+    //             self.lexer.pick();
+    //             let para = self.lexer.pick();
+    //             out.push(para.unwrap().literal.clone());
+    //         }
+    //     }
+    //     return Some(out);
+    // }
+
+    fn parse_plist(&mut self) -> Option<HashMap<String, i32>> {
+        let mut out: HashMap<String, i32> = HashMap::new(); // 输出代码块列表
         if self.lexer.lookup(0).unwrap().token_type != TokenType::RightCurve {
             let para = self.lexer.pick();
-            out.push(para.unwrap().literal.clone()); // 存储形参的 字符串 字面量
+            out.insert(para.unwrap().literal.clone(), 0);
+            let mut index: i32 = 1;
             while self.lexer.lookup(0).unwrap().token_type == TokenType::Comma {
                 self.lexer.pick();
                 let para = self.lexer.pick();
-                out.push(para.unwrap().literal.clone());
+                out.insert(para.unwrap().literal.clone(), index);
+                index = index + 1;
             }
         }
         return Some(out);
@@ -400,6 +416,15 @@ impl<'a> Parser<'a> {
                         right: None,
                     };
                     Some(Etree::Tree(tree))
+
+                    // let tree = Tree {
+                    //     value: Value::Float(4f32),
+                    //     token_type: TokenType::Number,
+                    //     semantics_type: SemanticsType::Direct,
+                    //     left: None,
+                    //     right: None,
+                    // };
+                    // Some(Etree::Tree(tree))
                 }
             }
 

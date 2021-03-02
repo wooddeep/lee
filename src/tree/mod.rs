@@ -4,6 +4,7 @@ use crate::lexer::TokenType;
 use crate::parser::SemanticsType;
 use std::any::Any;
 use std::cmp::Ordering;
+use std::collections::HashMap;
 // rust面向对象之继承: https://blog.csdn.net/u010766458/article/details/105403282/
 
 #[derive(Debug, Clone, PartialEq)]
@@ -85,6 +86,30 @@ impl PartialOrd for Value {
     }
 }
 
+impl Value {
+    pub fn get_str(&self) -> Option<&String> {
+        match self {
+            Value::Charset(str) => Some(str),
+            _ => None,
+        }
+    }
+
+    pub fn get_float(&self) -> Option<&f32> {
+        match self {
+            Value::Float(float) => Some(float),
+            _ => None,
+        }
+    }
+
+    pub fn get_bool(&self) -> Option<&bool> {
+        match self {
+            Value::Bool(bool) => Some(bool),
+            _ => None,
+        }
+    }
+}
+
+
 #[derive(Clone)]
 pub struct Tree {
     pub value: Value,
@@ -105,15 +130,17 @@ pub struct IfTree {
 pub struct FuncTree {
     pub semantics_type: SemanticsType,
     pub func_name: String,
-    pub plist: Option<Box<Vec<String>>>,
-    pub fbody: Option<Box<Vec<Etree>>>,
+    //pub plist: Option<Box<Vec<String>>>,
+    pub plist: Option<Box<HashMap<String, i32>>>,
+    // 形参名称 和 参数下标的对应关系
+    pub fbody: Option<Box<Vec<Etree>>>, // 函数体
 }
 
 #[derive(Clone)]
 pub struct FuncCallTree {
     pub semantics_type: SemanticsType,
     pub func_name: String,
-    pub alist: Option<Box<Vec<Etree>>>,
+    pub alist: Option<Box<Vec<Etree>>>, // 函数调用实参
 }
 
 pub enum TreeType {

@@ -1,8 +1,10 @@
 use std::cell::Cell;
 
-pub mod lexer;   // 文件夹名 作为模块名, 文件夹内模块文件的名称必须为mod.rs
+pub mod lexer;
+// 文件夹名 作为模块名, 文件夹内模块文件的名称必须为mod.rs
 pub mod parser;
-pub mod executor; // 文件名 作为模块名, 测试相关程序放在 test.rs里面
+pub mod executor;
+// 文件名 作为模块名, 测试相关程序放在 test.rs里面
 pub mod tree;
 
 pub use crate::lexer::*;
@@ -22,7 +24,7 @@ fn main() {
     //let mut lexer = Lexer{curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from("((-1 * (2 - 3) * 4) * -1) * -2; 1 + 1")};
     //let mut lexer = Lexer{curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from(r#" 1 + "hello" + "  " + "word" + 2"#)};
     //let mut lexer = Lexer{curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from(r#"if 1 < 0 {1 + 1} else {2 + 2}"#)};
-    let mut lexer = Lexer{curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from(r#"func foo(a, b) {a + b};foo(1, 1);"#)};
+    let mut lexer = Lexer { curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from(r#"func foo(a, b) {a + b};foo(1, 1);"#) };
     //let mut lexer = Lexer{curr_index: Cell::new(0), token_list: Vec::new(), formula: String::from("1 < 2")};
 
     lexer.analyze();
@@ -31,11 +33,10 @@ fn main() {
         println!("{}", element.literal)
     }
 
-    let mut parser = Parser{lexer: &mut lexer};
+    let mut parser = Parser { lexer: &mut lexer };
 
     let mut executor = Executor::new(&mut parser);
 
     executor.eval_program();
-
 }
 
